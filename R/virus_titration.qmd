@@ -1,0 +1,50 @@
+---
+title: "virus titration"
+format: html
+editor: source
+author: Oliver
+---
+
+### Source functions
+
+```{r}
+source("../R/99_proj_func.R")
+```
+
+### Libraries:
+
+```{r}
+
+library("tidyverse")
+library(httr)
+library(jsonlite)
+library(dplyr)
+library(R.utils)
+
+```
+
+### Generate data directories
+
+```{r}
+make_dir("../_raw")
+make_dir("../data")
+```
+
+### Load files:
+
+```{r}
+
+#name_prompt = readline(prompt = "State the exact name of the file : ");
+#Something cool where it knows what to load and stuff
+
+#Right now we do the primitive way
+titration_data_OLSE <- read_csv(file = "../_raw/H6N1 california titration OLSE230124.csv")
+titration_data_MOAJ <- read_csv(file = "../_raw/H6N1 california titration MAOJ230124.csv")
+
+View(titration_data_MOAJ)
+```
+
+```{r}
+
+
+```
