@@ -33,7 +33,7 @@ make_dir("../data")
 ### Load files:
 
 ```{r}
-
+#MagnusHaha
 #name_prompt = readline(prompt = "State the exact name of the file : ");
 #Something cool where it knows what to load and stuff
 
