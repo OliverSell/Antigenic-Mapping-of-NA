@@ -1,0 +1,62 @@
+---
+title: "RtaskVithia"
+format: html
+editor: visual
+---
+
+# R resources and tasks
+
+### Links:
+
+A\) http://www.sthda.com/english/wiki/r-basics-quick-and-easy - STHDA is a very useful R site
+
+B\) https://r4ds.hadley.nz/ - Tidyverse is a new way of writing R code that makes it much cleaner and easier to follow. This book is by the people who made Tidyverse. Tidyverse is going to be essential for working with data.
+
+C\) https://epirhandbook.com/en/ggplot-basics.html - ggplot2 is the default R plotting package, and is mostly very good (we can discuss some things that ggplot cannot do, but at a later stage). Definitely try out the exercises in here to familairise yourselves with ggplot2!
+
+## Tasks
+
+### Task 1 - Install latest version of RStudio
+
+At first this was completed by visitng the R studio site. Next we found a package that updates base R, called installr.
+
+### Task 2 - Get started with R via. link A, B and C.
+
+fafa
+
+### Task 3 - PlantGrowth data
+
+```{r}
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+
+library("Racmacs")
+library("usethis")
+library("tidyverse")
+```
+
+```{r}
+#| echo: false
+
+#Load data
+data("PlantGrowth")  
+
+#View data
+View(PlantGrowth)
+
+#Learn about dataset
+?PlantGrowth
+```
+
+The dataset compares the yield obtained under a control and two different treatment conditions, which created a dataframe (df) of 30 cases on 2 variables.
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
