@@ -36,6 +36,8 @@ library("stringr")
 library("Racmacs")
 library("usethis")
 library("tidyverse")
+library("dplyr")
+
 ```
 
 ```{r}
@@ -43,9 +45,6 @@ library("tidyverse")
 
 #Load data
 data("ToothGrowth")
-
-#View data
-View(ToothGrowth)
 
 #Learn about dataset
 ?ToothGrowth
@@ -56,6 +55,12 @@ The dataset compares the length of odontoblasts (cells responsible for toothgrow
 Magnus
 
 ```{r}
+tooth_data <- ToothGrowth |>
+  rename(length = len,
+         delivery = supp) 
+# use class(tooth_data) to check if it's a dataframe
+
+
 
 ```
 
