@@ -38,8 +38,8 @@ make_dir("../data")
 #Something cool where it knows what to load and stuff
 
 #Right now we do the primitive way
-titration_data_OLSE <- read_csv(file = "../_raw/H6N1 california titration OLSE230124.csv")
-titration_data_MOAJ <- read_csv(file = "../_raw/H6N1 california titration MAOJ230124.csv")
+titration_data_OLSE <- read_csv2(file = "../_raw/H6N1 california titration OLSE230124.csv")
+titration_data_MOAJ <- read_csv2(file = "../_raw/H6N1 california titration MAOJ230124.csv")
 
 View(titration_data_MOAJ)
 ```
