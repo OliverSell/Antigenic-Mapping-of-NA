@@ -32,6 +32,7 @@ fafa
 #| message: false
 #| warning: false
 
+library("stringr")
 library("Racmacs")
 library("usethis")
 library("tidyverse")
@@ -53,6 +54,14 @@ View(PlantGrowth)
 The dataset compares the yield obtained under a control and two different treatment conditions, which created a dataframe (df) of 30 cases on 2 variables.
 
 When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+Magnus
+
+```{r}
+
+```
+
+Oliver
 
 ```{r}
 #| echo: false
