@@ -145,8 +145,7 @@ ggplot(data = ToothGrowth,
 #Showing the density of the different lengths compared to delivery methods
 ggplot(data = ToothGrowth,
        mapping = aes(x = len)) +
-  geom_density(aes(fill = supp,
-                   alpha = 0.7))
+  geom_density(aes(fill = supp))
 
 #Boxplot of the two diferent delivery methods. There is no statistical sigificant difference between the two
 ggplot(data = ToothGrowth,
