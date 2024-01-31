@@ -70,17 +70,18 @@ ggplot(data = ToothGrowth,
                      y = len)) +
   geom_point(aes(color = supp))
 
-#Showing the density of the 
+#Showing the density of the different lengths compared to delivery methods
 ggplot(data = ToothGrowth,
        mapping = aes(x = len)) +
   geom_density(aes(color = supp))
 
-
+#Boxplot of the two diferent delivery methods. There is no statistical sigificant difference between the two
 ggplot(data = ToothGrowth,
        mapping = aes(x = supp, 
                      y = len)) +
   geom_boxplot()
 
+#Boxplot of the different dose levels. This plot does not make much sense tbh
 ggplot(data = ToothGrowth,
        mapping = aes(x = dose,
                      y = len)) +
