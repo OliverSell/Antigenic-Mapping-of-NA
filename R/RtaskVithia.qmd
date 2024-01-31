@@ -86,9 +86,14 @@ ggplot(data = ToothGrowth,
                      y = len)) +
   geom_boxplot()
 
-#Boxplot of the different dose levels. This plot does not make much sense tbh
+#Boxplot of the different dose levels.
 ggplot(data = ToothGrowth,
-       mapping = aes(x = dose,
-                     y = len)) +
-  geom_boxplot(aes(color = supp))
+       mapping = aes(x = as.factor(dose),
+                     y = len, 
+                     fill = supp)) +
+  geom_boxplot(notch = FALSE) + 
+  geom_dotplot(binaxis='y', 
+               stackdir='center', 
+               dotsize=1)
+
 ```
