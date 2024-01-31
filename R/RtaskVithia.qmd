@@ -92,34 +92,43 @@ tooth_data |>
     subtitle = "Comparison of odontoblast lenght and the two delivery methods"
   )
 
-
 tooth_data |>
   ggplot(mapping = aes(y = length,
-                       x = delivery,
-                       fill = delivery)) +
+                       x = as.factor(dose),
+                       color = delivery)) +
   geom_boxplot() +
+  geom_point(position = position_jitterdodge(jitter.width = 0.1, 
+                                             dodge.width = 0.75), 
+             size = 2) +
   
   # Define colours and labels
-  scale_fill_manual(values = c("orange",
-                               "hotpink")) +
-  scale_x_discrete(labels = c(oj = "Orange Juice", 
-                              vc = "Asorbic Acid")) +  
+  scale_color_manual(values = c("orange","hotpink"),
+                    labels = c("Orange Juice","Ascorbic Acid")) +
+  scale_x_discrete(labels = c("0.5 dose", "1.0 dose","2.0 dose")) +  
   
   # Plot settings
   theme_minimal(base_size = 10) +
-  theme(legend.position = "none",
+  theme(legend.position = "bottom",
+        axis.title.y = element_text(angle = 60, vjust = 0.5),
         axis.text.x = element_text(face = "bold",
                                    size = 11),
         plot.title = element_text(size = 15, 
                                   face = "bold"),
         plot.subtitle = element_text(size = 12),
-        plot.margin = margin(t = 20, l = 5)) + 
+        plot.margin = margin(t = 20, l = 10),
+        legend.text = element_text(size = 11),
+        legend.title = element_text(size = 11, 
+                                    face = "bold.italic")) + 
   labs(
     x = "",
-    y = "",
-    title = "Tooth growth and delivery methods",
-    subtitle = "Comparison of odontoblast lenght and the two delivery methods"
+    y = "Length",
+    color = "Delivery Method",
+    title = "Comparison of Tooth growth",
+    subtitle = "Odontoblast lenght for each delivery method at each dose of vitamin C"
   )
+
+
+
 ```
 
 Oliver
@@ -136,7 +145,8 @@ ggplot(data = ToothGrowth,
 #Showing the density of the different lengths compared to delivery methods
 ggplot(data = ToothGrowth,
        mapping = aes(x = len)) +
-  geom_density(aes(color = supp))
+  geom_density(aes(fill = supp,
+                   alpha = 0.7))
 
 #Boxplot of the two diferent delivery methods. There is no statistical sigificant difference between the two
 ggplot(data = ToothGrowth,
