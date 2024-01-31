@@ -42,7 +42,7 @@ library("tidyverse")
 #| echo: false
 
 #Load data
-data("ToothGrowth")  
+data("ToothGrowth")
 
 #View data
 View(ToothGrowth)
@@ -63,5 +63,26 @@ Oliver
 
 ```{r}
 #| echo: false
-2 * 2
+
+#Lets show that when you increase the dose of vitamin C, the length of the tooth changes
+ggplot(data = ToothGrowth,
+       mapping = aes(x = dose,
+                     y = len)) +
+  geom_point(aes(color = supp))
+
+#Showing the density of the 
+ggplot(data = ToothGrowth,
+       mapping = aes(x = len)) +
+  geom_density(aes(color = supp))
+
+
+ggplot(data = ToothGrowth,
+       mapping = aes(x = supp, 
+                     y = len)) +
+  geom_boxplot()
+
+ggplot(data = ToothGrowth,
+       mapping = aes(x = dose,
+                     y = len)) +
+  geom_boxplot(aes(color = supp))
 ```
