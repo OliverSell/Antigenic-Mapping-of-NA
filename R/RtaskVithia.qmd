@@ -44,7 +44,7 @@ library("dplyr")
 #| echo: false
 
 #Load data
-data("ToothGrowth")
+data("ToothGrowth")  
 
 #Learn about dataset
 ?ToothGrowth
@@ -91,38 +91,40 @@ tooth_data |>
     title = "Tooth growth and delivery methods",
     subtitle = "Comparison of odontoblast lenght and the two delivery methods"
   )
+
+
+tooth_data |>
+  ggplot(mapping = aes(y = length,
+                       x = delivery,
+                       fill = delivery)) +
+  geom_boxplot() +
+  
+  # Define colours and labels
+  scale_fill_manual(values = c("orange",
+                               "hotpink")) +
+  scale_x_discrete(labels = c(oj = "Orange Juice", 
+                              vc = "Asorbic Acid")) +  
+  
+  # Plot settings
+  theme_minimal(base_size = 10) +
+  theme(legend.position = "none",
+        axis.text.x = element_text(face = "bold",
+                                   size = 11),
+        plot.title = element_text(size = 15, 
+                                  face = "bold"),
+        plot.subtitle = element_text(size = 12),
+        plot.margin = margin(t = 20, l = 5)) + 
+  labs(
+    x = "",
+    y = "",
+    title = "Tooth growth and delivery methods",
+    subtitle = "Comparison of odontoblast lenght and the two delivery methods"
+  )
 ```
 
 Oliver
 
 ```{r}
 #| echo: false
-
-#Lets show that when you increase the dose of vitamin C, the length of the tooth changes
-ggplot(data = ToothGrowth,
-       mapping = aes(x = dose,
-                     y = len)) +
-  geom_point(aes(color = supp))
-
-#Showing the density of the different lengths compared to delivery methods
-ggplot(data = ToothGrowth,
-       mapping = aes(x = len)) +
-  geom_density(aes(color = supp))
-
-#Boxplot of the two diferent delivery methods. There is no statistical sigificant difference between the two
-ggplot(data = ToothGrowth,
-       mapping = aes(x = supp, 
-                     y = len)) +
-  geom_boxplot()
-
-#Boxplot of the different dose levels.
-ggplot(data = ToothGrowth,
-       mapping = aes(x = as.factor(dose),
-                     y = len, 
-                     fill = supp)) +
-  geom_boxplot(notch = FALSE) + 
-  geom_dotplot(binaxis='y', 
-               stackdir='center', 
-               dotsize=1)
-
+2 * 2
 ```
