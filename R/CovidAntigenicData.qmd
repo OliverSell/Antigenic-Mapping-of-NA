@@ -1,0 +1,22 @@
+---
+title: "CovidAntigenicData"
+format: html
+editor: visual
+---
+
+# Antigenic Cartography - COVID
+
+Antigen names; H69775 (wuhan), Alpha (B.1.1.7), Beta (B.1.351), Gamma (P.1), Delta B.1.617.2, Delta AY.33, Delta AY.4, Delta AY.4.2, Delta B.1.617.2 and E484K Omicron
+
+Einstein
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+Magnus
+
+```{r}
+
+```
