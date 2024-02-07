@@ -32,5 +32,56 @@ TiterTable <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-20
 Magnus
 
 ```{r}
-TiterTable <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv")
+titer_table <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv")
+
+set_colnames_from_row <- function(tbl, row_number = 1) {
+  # Check if the specified row number is within the number of rows in the table
+  if(row_number > nrow(tbl) | row_number < 1) {
+    stop("The specified row number is out of bounds.")
+  }
+  # Set column names from the specified row
+  colnames(tbl) <- as.character(unlist(tbl[row_number, ]))
+  
+  # Remove the row that was used for column names
+  tbl <- tbl[-row_number, ]
+  
+  return(tbl)
+}
+
+serum_ids <- titer_table |>
+  slice(6) |> # Select the row with Serum IDs
+  select(where(~ any(!is.na(.)))) |> #Remove NA
+  unlist() |> # Flatten it to a vector 
+  as.character()
+
+titer_dirty <- titer_table |>
+  # Remove first with meta data.
+  slice(-(1:4)) |>
+  # Remove coloumns that have no data. 
+  # Function keeps columns with at least one value is not NA. 
+  select(where(~ any(!is.na(.)))) |> 
+  as_tibble() |> 
+  t() |>
+  as_tibble() |>
+  set_colnames_from_row(row_number = 2) |>
+  slice(-(1:4))
+
+
+
+attr_table <- titer_table |>
+  slice(-(1:4)) |>
+  slice_head(n = 3) |>
+  t() |>
+  as_tibble() |>
+  slice(-(1:4)) |>
+  set_colnames_from_row(row_number = 1)
+
+
+
+"""
+titer_dirty_long <- titer_dirty |>
+  pivot_longer(
+    cols = -
+  )
+"""
 ```
