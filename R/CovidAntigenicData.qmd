@@ -27,6 +27,42 @@ Einstein
 TiterTable <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv")
 
 
+dirty_titer <- TiterTable |> as_tibble()
+View(dirty_titer)
+
+#Count the number of virus strains
+dirty_titer |> 
+  select("...2") |> 
+  slice(9:n()) |> 
+  filter_all(any_vars(!is.na(.))) |> 
+  nrow()
+
+#Count the number of antigen sera. Not really "tidyverse" but it works
+dirty_titer |> 
+  slice(6) |> 
+  select(-c(1:5)) |> 
+  as.list() |>
+  map_lgl(~ !is.na(.)) |> 
+  sum()
+
+
+
+# Function to check if 80% of a column is empty
+check_empty <- function(column) {
+  empty_count <- sum(is.na(column) | column == "")
+  return(empty_count >= 0.8 * length(column))
+}
+
+# Using tidyverse functions to check if 80% of each column is empty
+empty_columns <- dirty_titer %>%
+  map_lgl(check_empty)
+
+print(empty_columns)
+
+
+
+
+
 ```
 
 Magnus
