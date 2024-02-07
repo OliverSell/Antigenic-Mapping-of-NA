@@ -5,7 +5,14 @@ editor: visual
 ---
 
 ```{r}
-library(tidyverse)
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+
+library("stringr")
+library("dplyr")
+library("tidyverse")
 ```
 
 # Antigenic Cartography - COVID
@@ -25,5 +32,5 @@ TiterTable <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-20
 Magnus
 
 ```{r}
-
+TiterTable <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv")
 ```
