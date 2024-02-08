@@ -16,10 +16,10 @@ source("../R/99_proj_func.R")
 ```{r}
 
 library("tidyverse")
-library(httr)
-library(jsonlite)
-library(dplyr)
-library(R.utils)
+library("httr")
+library("jsonlite")
+library("dplyr")
+library("R.utils")
 
 ```
 
@@ -40,10 +40,31 @@ make_dir("../data")
 titration_data_OLSE <- read_csv2(file = "../_raw/H6N1 california titration OLSE230124.csv")
 titration_data_MOAJ <- read_csv2(file = "../_raw/H6N1 california titration MAOJ230124.csv")
 
+View(titration_data_OLSE)
 View(titration_data_MOAJ)
 ```
 
+### Extracting the plate data
+
 ```{r}
+#Extrats the correct table
+titration_data_extract <- titration_data_MOAJ[13:16, 2:13]
+View(titration_data_extract)
+
+#Tries to rename the columns but does not work
+titration_data_extract <- titration_data_extract |> rename_with(~seq_along(.))
+
+#Extracts background reading
+titration_data_background <- titration_data_MOAJ[24:27, 2:13]
+
+#Tries to get 
+titration_data_extract - titration_data_background
 
 
+#Generates a vector for naming 1:12
+vector_name <- 1:12
+
+
+
+class(titration_data_background)
 ```
