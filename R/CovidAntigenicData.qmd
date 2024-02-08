@@ -13,6 +13,7 @@ editor: visual
 library("stringr")
 library("dplyr")
 library("tidyverse")
+library("Racmacs")
 ```
 
 # Antigenic Cartography - COVID
@@ -23,22 +24,21 @@ Einstein
 
 ```{r}
 
+titer_table <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv",
+                              na = c("",".","NA"))
 
-TiterTable <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv")
-
-
-dirty_titer <- TiterTable |> as_tibble()
+titer_table <- titer_table |> as_tibble()
 View(dirty_titer)
 
 #Count the number of virus strains
-dirty_titer |> 
+titer_table |> 
   select("...2") |> 
   slice(9:n()) |> 
   filter_all(any_vars(!is.na(.))) |> 
   nrow()
 
 #Count the number of antigen sera. Not really "tidyverse" but it works
-dirty_titer |> 
+titer_table |> 
   slice(6) |> 
   select(-c(1:5)) |> 
   as.list() |>
@@ -58,9 +58,6 @@ empty_columns <- dirty_titer %>%
   map_lgl(check_empty)
 
 print(empty_columns)
-
-
-
 
 
 ```
@@ -190,4 +187,48 @@ attr_table <- titer_table |>
   slice(-(1:4)) |>
   set_colnames_from_row(row_number = 1)
 
+```
+
+Antigenic mapping
+
+```{r}
+titer_clean_values <- titer_clean |> 
+  slice(-(1)) |> 
+  as.tibble() |> 
+  column_to_rownames(var = "serum_id") |> 
+  select(!(c("serum_passage", "serum_species"))) |> 
+  mutate(across(everything(), ~replace_na(., "*"))) |> 
+  t()
+View(titer_clean_values)
+
+
+# Create the acmap object, specifying the titer table
+map <- acmap(
+  titer_table = titer_clean_values
+)
+
+# Perform some optimization runs on the map object to try and determine a best map
+map <- optimizeMap(
+  map                     = map,
+  number_of_dimensions    = 2,
+  number_of_optimizations = 50000,
+  minimum_column_basis    = "none"
+)
+
+plot(map)
+
+RacViewer(
+  map,
+  show_procrustes = FALSE,
+  show_group_legend = FALSE,
+  options = list(show.names = TRUE,
+                 show.errorlines = FALSE,
+                 show.connectionlines = FALSE,
+                 show.titers = FALSE),
+  width = NULL,
+  height = NULL,
+  elementId = NULL
+)
+
+plot(map)
 ```
