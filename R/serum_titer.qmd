@@ -1,0 +1,79 @@
+---
+title: "serum titer calculation"
+format: html
+editor: source
+author: Magnus & Oliver
+---
+
+### Source functions
+
+```{r}
+source("../R/99_proj_func.R")
+```
+
+### Libraries:
+
+```{r}
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+
+library("stringr")
+library("dplyr")
+library("tidyverse")
+library("httr")
+library("jsonlite")
+library("R.utils")
+```
+
+
+### Load files:
+
+```{r}
+#name_prompt = readline(prompt = "State the exact name of the file : ");
+#Something cool where it knows what to load and stuff
+
+#Right now we do the primitive way
+sera_y_titration_g2 <- read_csv2(file = "../_raw/H6N1cali_pig_sera_Y1_10_25_01.csv")
+sera_x_titration_g4 <- read_csv2(file = "../_raw/H6N1cali_pig_sera_X1_10_25_01.csv")
+
+View(sera_x_titration_g4)
+```
+### Data
+```{r}
+set_colnames_from_row <- function(tbl, row_number = 1) {
+  # Check if the specified row number is within the number of rows in the table
+  if(row_number > nrow(tbl) | row_number < 1) {
+    stop("The specified row number is out of bounds.")
+  }
+  # Set column names from the specified row
+  colnames(tbl) <- as.character(unlist(tbl[row_number, ]))
+  #colnames(tbl) <- paste0("Col",as.character(unlist(tbl[row_number, ])))
+  # Remove the row that was used for column names
+  tbl <- tbl[-row_number, ]
+  return(tbl)
+}
+
+#######################################
+############  For one file ############
+#######################################
+sera_y_basic <- sera_y_titration_g2[1:20, 1:13] |>
+  slice_tail(n = 9) |>
+  select(-matches("user")) |>
+  set_colnames_from_row(row_number = 1)
+  
+### Background Calculation 
+background <- lapply(sera_y_basic[5:8,11], as.numeric) # Background
+background <- mean(background[["VIRUS"]])
+
+sera_y_background <- sera_y_basic |>
+  #mutate(across(-Y1, 
+               # ~ as.numeric(.x)))
+  # MINUS BACKGROUND
+  
+  
+
+
+
+```
