@@ -65,10 +65,23 @@ print(empty_columns)
 
 ```
 
-Magnus
+Magnus er ret sej
 
 ```{r}
 titer_table <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv")
+
+
+
+#######################
+### Serum ID string ###
+#######################
+
+serum_ids <- titer_table |>
+  slice(6) |> # Select the row with Serum IDs
+  select(where(~ any(!is.na(.)))) |> #Remove NA
+  unlist() |> # Flatten it to a vector 
+  as.character()
+
 
 set_colnames_from_row <- function(tbl, row_number = 1) {
   # Check if the specified row number is within the number of rows in the table
@@ -84,28 +97,7 @@ set_colnames_from_row <- function(tbl, row_number = 1) {
   
   return(tbl)
 }
-#######################
-### Attribute Table ###
-#######################
-attr_table <- titer_table |>
-  slice(-(1:4)) |>
-  slice_head(n = 3) |>
-  t() |>
-  as_tibble() |>
-  slice(-(1:4)) |>
-  set_colnames_from_row(row_number = 1)
 
-#######################
-### Serum ID string ###
-#######################
-
-serum_ids <- titer_table |>
-  slice(6) |> # Select the row with Serum IDs
-  select(where(~ any(!is.na(.)))) |> #Remove NA
-  unlist() |> # Flatten it to a vector 
-  as.character()
-
-"""
 ########################
 #### Titer Cleaning ####
 ########################
@@ -119,25 +111,27 @@ titer_dirty <- titer_table |>
   as_tibble() |>
   set_colnames_from_row(row_number = 2)
 
-names(titer_dirty)[1] <- "serum_passages"
+names(titer_dirty)[1] <- "serum_passage"
 names(titer_dirty)[2] <- "serum_id"
 names(titer_dirty)[3] <- "serum_species"
 clean_names <- map_chr(names(titer_dirty), ~ifelse(is.na(.x) | .x == "", paste0("col", which(names(titer_dirty) == .x)), .x))
 unique_clean_names <- make.unique(clean_names)
 names(titer_dirty) <- unique_clean_names
 
-titer_dirty <- titer_dirty |>
+titer_clean <- titer_dirty |>
   slice(-c(1, 2, 3)) |>
   select(-matches("col"), -"Antigen names") |>
-  relocate(c("serum_passages","serum_species"), .after = "Omicron")
+  relocate(c("serum_passage","serum_species"), .after = "Omicron")
+
 """
-
-
 clean_and_unique_names <- function(tbl) {
   # Generate valid column names to replace NA or "" and ensure uniqueness
   valid_col_names <- make.names(names(tbl), unique = TRUE)
   # Prefix with "Col" and ensure unique naming
-  valid_col_names <- ifelse(valid_col_names == "NA" | valid_col_names == "", paste0("col", seq_along(valid_col_names)), valid_col_names)
+  valid_col_names <- ifelse(valid_col_names == "NA" | 
+                              valid_col_names == "", 
+                            paste0("col", seq_along(valid_col_names)),
+                            valid_col_names)
   valid_col_names <- make.unique(valid_col_names)
   names(tbl) <- valid_col_names
   return(tbl)
@@ -183,6 +177,17 @@ titer_dirty <- titer_table %>%
   relocate(c("serum_passage","serum_species"), .after = "Omicron") |>
   # Transpose and convert to a tibble, if necessary
   as_tibble()
+"""
 
+#######################
+### Attribute Table ###
+#######################
+attr_table <- titer_table |>
+  slice(-(1:4)) |>
+  slice_head(n = 3) |>
+  t() |>
+  as_tibble() |>
+  slice(-(1:4)) |>
+  set_colnames_from_row(row_number = 1)
 
 ```
