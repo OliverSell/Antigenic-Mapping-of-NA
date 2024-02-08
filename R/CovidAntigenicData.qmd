@@ -77,6 +77,7 @@ set_colnames_from_row <- function(tbl, row_number = 1) {
   }
   # Set column names from the specified row
   colnames(tbl) <- as.character(unlist(tbl[row_number, ]))
+  #colnames(tbl) <- paste0("Col",as.character(unlist(tbl[row_number, ])))
   
   # Remove the row that was used for column names
   tbl <- tbl[-row_number, ]
@@ -104,7 +105,7 @@ serum_ids <- titer_table |>
   unlist() |> # Flatten it to a vector 
   as.character()
 
-
+"""
 ########################
 #### Titer Cleaning ####
 ########################
@@ -114,7 +115,6 @@ titer_dirty <- titer_table |>
   # Remove coloumns that have no data. 
   # Function keeps columns with at least one value is not NA. 
   select(where(~ any(!is.na(.)))) |> 
-  as_tibble() |> 
   t() |>
   as_tibble() |>
   set_colnames_from_row(row_number = 2)
@@ -122,6 +122,67 @@ titer_dirty <- titer_table |>
 names(titer_dirty)[1] <- "serum_passages"
 names(titer_dirty)[2] <- "serum_id"
 names(titer_dirty)[3] <- "serum_species"
+clean_names <- map_chr(names(titer_dirty), ~ifelse(is.na(.x) | .x == "", paste0("col", which(names(titer_dirty) == .x)), .x))
+unique_clean_names <- make.unique(clean_names)
+names(titer_dirty) <- unique_clean_names
 
-titer_dirty <- titer_dirty[-c(1,3)]  
+titer_dirty <- titer_dirty |>
+  slice(-c(1, 2, 3)) |>
+  select(-matches("col"), -"Antigen names") |>
+  relocate(c("serum_passages","serum_species"), .after = "Omicron")
+"""
+
+
+clean_and_unique_names <- function(tbl) {
+  # Generate valid column names to replace NA or "" and ensure uniqueness
+  valid_col_names <- make.names(names(tbl), unique = TRUE)
+  # Prefix with "Col" and ensure unique naming
+  valid_col_names <- ifelse(valid_col_names == "NA" | valid_col_names == "", paste0("col", seq_along(valid_col_names)), valid_col_names)
+  valid_col_names <- make.unique(valid_col_names)
+  names(tbl) <- valid_col_names
+  return(tbl)
+}
+# Define a function to set column names from a specific row, replacing NA values
+set_colnames_from_row <- function(tbl, row_number = 1) {
+  if (row_number > nrow(tbl) || row_number < 1) {
+    stop("The specified row number is out of bounds.")
+  }
+  
+  # Extract the names from the specified row, replacing NA values with a placeholder
+  new_names <- as.character(unlist(tbl[row_number, ]))
+  new_names[is.na(new_names)] <- paste0("col", which(is.na(new_names)))
+  
+  # Ensure the new names are unique to avoid duplicate column names
+  unique_new_names <- make.unique(new_names)
+  
+  # Set the new, unique names as column names
+  colnames(tbl) <- unique_new_names
+  
+  # Remove the row that was used for column names
+  tbl <- tbl[-row_number, ]
+  
+  return(tbl)
+}
+
+# Adjusted pipeline using the updated function
+titer_dirty <- titer_table %>%
+  # Remove first rows with metadata.
+  slice(-(1:4)) %>%
+  t() %>%
+  as_tibble() %>%
+  clean_and_unique_names() %>%
+  {set_colnames_from_row(., 2)} %>%
+  rename(serum_passage = col1, serum_id = col2, serum_species = col3) %>%
+  slice(-c(1, 2, 3, 4)) %>%
+  # Use select() with everything() to bypass the issue if Antigen_names does not exist
+  select(-matches("^col\\d+$"), dplyr::everything()) %>%
+  # Conditionally remove "Antigen_names" if it exists
+  {if ("Antigen names" %in% colnames(.)) select(., -"Antigen names") else .} %>%
+  # Remove empty coloumns
+  select(-matches("col")) |>
+  relocate(c("serum_passage","serum_species"), .after = "Omicron") |>
+  # Transpose and convert to a tibble, if necessary
+  as_tibble()
+
+
 ```
