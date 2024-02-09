@@ -14,6 +14,7 @@ library("stringr")
 library("dplyr")
 library("tidyverse")
 library("Racmacs")
+library("RColorBrewer")
 ```
 
 # Antigenic Cartography - COVID
@@ -24,8 +25,7 @@ Einstein
 
 ```{r}
 
-titer_table <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv",
-                              na = c("",".","NA"))
+titer_table <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv")
 
 titer_table <- titer_table |> as_tibble()
 View(dirty_titer)
@@ -192,6 +192,14 @@ attr_table <- titer_table |>
 Antigenic mapping
 
 ```{r}
+#Setting core options. Not sure what it does exactly but is needed
+options(RacOptimizer.num_cores = 1)
+
+#Getting the strain names
+sera_names <- colnames(titer_clean)
+legend_names <- sera_names[-1]
+
+#Getting data ready for mapping
 titer_clean_values <- titer_clean |> 
   slice(-(1)) |> 
   as.tibble() |> 
@@ -211,24 +219,52 @@ map <- acmap(
 map <- optimizeMap(
   map                     = map,
   number_of_dimensions    = 2,
-  number_of_optimizations = 50000,
+  number_of_optimizations = 10000,
   minimum_column_basis    = "none"
 )
 
-plot(map)
 
+#colours that might work
+##myColors <- brewer.pal(9,"Set1")
+##names(myColors) <- legend_names
+
+#colours that do work
+##colours <- rainbow(10)
+colours <- topo.colors(10)
+agFill(map) <- colours
+
+
+#Trying to create a legend. Dont know what to do with it
+legend_map <- setLegend(map, legend_names, colours)
+
+
+
+
+#Visualizing using the plot command.
+plot(legend_map, 
+     plot_labels = "antigens",
+     optimization_number = 10,
+     grid.margin.col = "grey90",
+     procrustes.col = "black")
+
+#+ scale_color_manual(values = c("Omircron" = "red"))
+
+#Visualizing using the RacViewer with some set options. 
 RacViewer(
   map,
   show_procrustes = FALSE,
   show_group_legend = FALSE,
+  
+  #Deault options
   options = list(show.names = TRUE,
                  show.errorlines = FALSE,
                  show.connectionlines = FALSE,
                  show.titers = FALSE),
   width = NULL,
   height = NULL,
-  elementId = NULL
-)
+  elementId = NULL)
 
-plot(map)
+#Trying to export the map to html
+view(legend_map, filename = "map_with_legend.html")
+
 ```
