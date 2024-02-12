@@ -142,9 +142,9 @@ model <- drm(
 # Use predict() to find corresponding antibody concentration for 50% cut-off value
 predicted_log10_dilution <- predict(model, 
                                     newdata=data.frame(
-                                      log10_dilution=virus_cut_off_50)
+                                      log10_dilution = virus_cut_off_50)
                                     , type="response")
-# predicted_dilution <- 10^predicted_log10_dilution
+predicted_dilution <- 10^predicted_log10_dilution
 
 
 ##########
@@ -163,7 +163,7 @@ predicted_log10_dilution <- predict(model,
 ########## 
 # Interpret titers based on normal scale
 
-#inhibition_titers <- ED(model, 50, interval="confidence")
+# inhibition_titers <- ED(model, 50, interval="confidence")
 
 ```
 
