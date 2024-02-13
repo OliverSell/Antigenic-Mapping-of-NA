@@ -2,6 +2,8 @@
 title: "CovidAntigenicData"
 format: html
 editor: visual
+output-dir: "../doc"
+
 ---
 
 ```{r}
@@ -9,6 +11,7 @@ editor: visual
 #| echo: false
 #| message: false
 #| warning: false
+
 
 library("stringr")
 library("dplyr")
@@ -21,15 +24,21 @@ library("RColorBrewer")
 
 Antigen names; H69775 (wuhan), Alpha (B.1.1.7), Beta (B.1.351), Gamma (P.1), Delta B.1.617.2, Delta AY.33, Delta AY.4, Delta AY.4.2, Delta B.1.617.2 and E484K Omicron
 
-Einstein
+Loading the data
 
 ```{r}
+#| output: false
 
 titer_table <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv")
+```
 
-titer_table <- titer_table |> as_tibble()
-View(dirty_titer)
+Functions that count the axis
 
+```{r}
+#| echo: false
+#| message: false
+
+print("The amount of virus strains are:")
 #Count the number of virus strains
 titer_table |> 
   select("...2") |> 
@@ -37,6 +46,8 @@ titer_table |>
   filter_all(any_vars(!is.na(.))) |> 
   nrow()
 
+
+print("The amount of antigen sera are:")
 #Count the number of antigen sera. Not really "tidyverse" but it works
 titer_table |> 
   slice(6) |> 
@@ -45,8 +56,6 @@ titer_table |>
   map_lgl(~ !is.na(.)) |> 
   sum()
 
-
-
 # Function to check if 80% of a column is empty
 check_empty <- function(column) {
   empty_count <- sum(is.na(column) | column == "")
@@ -54,20 +63,16 @@ check_empty <- function(column) {
 }
 
 # Using tidyverse functions to check if 80% of each column is empty
-empty_columns <- dirty_titer %>%
-  map_lgl(check_empty)
+#empty_columns <- titer_dirty %>%
+#  map_lgl(check_empty)
 
-print(empty_columns)
 
 
 ```
 
-Magnus er ret sej
+Data wrangling
 
 ```{r}
-titer_table <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv")
-
-
 
 #######################
 ### Serum ID string ###
@@ -120,62 +125,6 @@ titer_clean <- titer_dirty |>
   dplyr::select(-matches("col"), -"Antigen names") |>
   relocate(c("serum_passage","serum_species"), .after = "Omicron")
 
-"""
-clean_and_unique_names <- function(tbl) {
-  # Generate valid column names to replace NA or "" and ensure uniqueness
-  valid_col_names <- make.names(names(tbl), unique = TRUE)
-  # Prefix with "Col" and ensure unique naming
-  valid_col_names <- ifelse(valid_col_names == "NA" | 
-                              valid_col_names == "", 
-                            paste0("col", seq_along(valid_col_names)),
-                            valid_col_names)
-  valid_col_names <- make.unique(valid_col_names)
-  names(tbl) <- valid_col_names
-  return(tbl)
-}
-# Define a function to set column names from a specific row, replacing NA values
-set_colnames_from_row <- function(tbl, row_number = 1) {
-  if (row_number > nrow(tbl) || row_number < 1) {
-    stop("The specified row number is out of bounds.")
-  }
-  
-  # Extract the names from the specified row, replacing NA values with a placeholder
-  new_names <- as.character(unlist(tbl[row_number, ]))
-  new_names[is.na(new_names)] <- paste0("col", which(is.na(new_names)))
-  
-  # Ensure the new names are unique to avoid duplicate column names
-  unique_new_names <- make.unique(new_names)
-  
-  # Set the new, unique names as column names
-  colnames(tbl) <- unique_new_names
-  
-  # Remove the row that was used for column names
-  tbl <- tbl[-row_number, ]
-  
-  return(tbl)
-}
-
-# Adjusted pipeline using the updated function
-titer_dirty <- titer_table %>%
-  # Remove first rows with metadata.
-  slice(-(1:4)) %>%
-  t() %>%
-  as_tibble() %>%
-  clean_and_unique_names() %>%
-  {set_colnames_from_row(., 2)} %>%
-  rename(serum_passage = col1, serum_id = col2, serum_species = col3) %>%
-  slice(-c(1, 2, 3, 4)) %>%
-  # Use select() with everything() to bypass the issue if Antigen_names does not exist
-  select(-matches("^col\\d+$"), dplyr::everything()) %>%
-  # Conditionally remove "Antigen_names" if it exists
-  {if ("Antigen names" %in% colnames(.)) select(., -"Antigen names") else .} %>%
-  # Remove empty coloumns
-  select(-matches("col")) |>
-  relocate(c("serum_passage","serum_species"), .after = "Omicron") |>
-  # Transpose and convert to a tibble, if necessary
-  as_tibble()
-"""
-
 #######################
 ### Attribute Table ###
 #######################
@@ -200,13 +149,16 @@ options(RacOptimizer.num_cores = 1)
 #Getting data ready for mapping
 titer_clean_values <- titer_clean |> 
   slice(-(1)) |> 
-  as.tibble() |> 
+  as_tibble() |> 
   column_to_rownames(var = "serum_id") |> 
   dplyr::select(!(c("serum_passage", "serum_species"))) |> 
   mutate(across(everything(), ~replace_na(., "*"))) |> 
   t()
-View(titer_clean_values)
+str(titer_clean_values)
+#View(titer_)
 
+testtable <- matrix(2 ^ (1:6) * 10, 6, 4)
+str(testtable)
 #Getting the strain names
 legend_names <- rownames(titer_clean_values)
 
@@ -229,19 +181,21 @@ map <- optimizeMap(
 ##names(myColors) <- legend_names
 
 #colours that do work
-##colours <- rainbow(10)
+colours <- rainbow(10)
 colours <- topo.colors(10)
 agFill(map) <- colours
 
 
 #Trying to create a legend. Dont know what to do with it
-legend_map <- setLegend(map, legend_names, colours)
+map_legend <- setLegend(map, legend_names, colours)
 
-
+#view(map_legend,
+#  show_group_legend = FALSE,
+#  options = list(show.names = TRUE))
 
 
 #Visualizing using the plot command.
-plot(legend_map, 
+plot(map_legend, 
      plot_labels = "antigens",
      #optimization_number = 10,
      grid.margin.col = "grey90",
@@ -250,21 +204,58 @@ plot(legend_map,
 #+ scale_color_manual(values = c("Omircron" = "red"))
 
 #Visualizing using the RacViewer with some set options. 
-RacViewer(
-  map,
-  show_procrustes = FALSE,
-  show_group_legend = FALSE,
-  
-  #Deault options
-  options = list(show.names = TRUE,
-                 show.errorlines = FALSE,
-                 show.connectionlines = FALSE,
-                 show.titers = FALSE),
-  width = NULL,
-  height = NULL,
-  elementId = NULL)
+##RacViewer(
+##  map_legend,
+##  show_procrustes = FALSE,
+##  show_group_legend = FALSE,
+##  
+##  #Deault options
+##  options = list(show.names = TRUE,
+##                 show.errorlines = FALSE,
+##                 show.connectionlines = FALSE,
+##                 show.titers = FALSE),
+##  width = NULL,
+##  height = NULL,
+##  elementId = NULL)
 
 #Trying to export the map to html
-view(legend_map, filename = "map_with_legend.html")
+#view(map_legend, filename = "map_with_legend.html")
+
+
+agGroups(map) <- factor(agFill(map))
+srGroups(map) <- factor(srOutline(map))
+
+
+#view(
+#  map_legend,
+#  show_group_legend = FALSE
+#)
+
+# Define the path to the 'results' directory relative to the 'R' directory
+results_directory <- file.path(getwd(), "../results")
+
+# Create a temporary file within the 'results' directory
+tmp <- tempfile(tmpdir = results_directory, fileext = ".html")
+
+# Extract just the file name, not the entire path
+tmp_file_name <- basename(tmp)
+
+# Use racmacs to export the file to the 'results' directory
+export_viewer(map_legend, tmp, selfcontained = FALSE)
+
+#View(tmp)
+#unlink(tmp)
+tmp_file_name
 
 ```
+
+
+2. **Embed the HTML file using the correct Quarto syntax**:
+
+After the R chunk (in the markdown part of your Quarto document, not inside any R code chunk), use the following syntax to embed the iframe:
+
+::: {.panel}
+<iframe src="../results/fileb8836231d65.html" style="width:100%; height:600px; border:none;" title="antigenic map"></iframe>
+:::
+
+
