@@ -27,6 +27,8 @@ Antigen names; H69775 (wuhan), Alpha (B.1.1.7), Beta (B.1.351), Gamma (P.1), Del
 Loading the data
 
 ```{r}
+#| echo: false
+#| message: false
 #| output: false
 
 titer_table <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv")
@@ -154,11 +156,18 @@ titer_clean_values <- titer_clean |>
   dplyr::select(!(c("serum_passage", "serum_species"))) |> 
   mutate(across(everything(), ~replace_na(., "*"))) |> 
   t()
+
+
+
+####TESTING####
 str(titer_clean_values)
 #View(titer_)
 
 testtable <- matrix(2 ^ (1:6) * 10, 6, 4)
 str(testtable)
+
+####----####
+
 #Getting the strain names
 legend_names <- rownames(titer_clean_values)
 
@@ -187,7 +196,7 @@ agFill(map) <- colours
 
 
 #Trying to create a legend. Dont know what to do with it
-map_legend <- setLegend(map, legend_names, colours)
+map_legend <- setLegend(map, legend_names, colours, style.bottom = "8px", style.right = "8px")
 
 #view(map_legend,
 #  show_group_legend = FALSE,
@@ -201,7 +210,9 @@ plot(map_legend,
      grid.margin.col = "grey90",
      procrustes.col = "hotpink")
 
-#+ scale_color_manual(values = c("Omircron" = "red"))
+#Trying with ggplot #####THIS SECTION IS FOR MAGNUS AND HIS BEAUTIFUL PLOTS####
+ggplot(
+  data = map)
 
 #Visualizing using the RacViewer with some set options. 
 ##RacViewer(
@@ -226,10 +237,10 @@ agGroups(map) <- factor(agFill(map))
 srGroups(map) <- factor(srOutline(map))
 
 
-#view(
-#  map_legend,
-#  show_group_legend = FALSE
-#)
+view(
+  map_legend,
+  show_group_legend = FALSE
+)
 
 # Define the path to the 'results' directory relative to the 'R' directory
 results_directory <- file.path(getwd(), "../results")
@@ -241,11 +252,10 @@ tmp <- tempfile(tmpdir = results_directory, fileext = ".html")
 tmp_file_name <- basename(tmp)
 
 # Use racmacs to export the file to the 'results' directory
-export_viewer(map_legend, tmp, selfcontained = FALSE)
+export_viewer(map_legend, tmp, selfcontained = TRUE)
 
 #View(tmp)
-#unlink(tmp)
-tmp_file_name
+unlink(tmp)
 
 ```
 
