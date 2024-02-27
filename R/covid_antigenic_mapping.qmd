@@ -201,17 +201,17 @@ map_legend <- setLegend(map, legend_names, colours, style.bottom = "8px", style.
 #  show_group_legend = FALSE,
 #  options = list(show.names = TRUE))
 
-
 #Visualizing using the plot command.
 plot(map_legend, 
      plot_labels = "antigens",
      #optimization_number = 10,
      grid.margin.col = "grey90",
-     procrustes.col = "hotpink")
+     procrustes.col = "hotpink",
+     show_error_lines = TRUE)
 
 #Trying with ggplot #####THIS SECTION IS FOR MAGNUS AND HIS BEAUTIFUL PLOTS####
-ggplot(
-  data = map)
+
+
 
 #Visualizing using the RacViewer with some set options. 
 ##RacViewer(
