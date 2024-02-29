@@ -348,13 +348,3 @@ export_viewer(map_legend, tmp, selfcontained = TRUE)
 unlink(tmp)
 
 ```
-
-2.  **Embed the HTML file using the correct Quarto syntax**:
-
-After the R chunk (in the markdown part of your Quarto document, not inside any R code chunk), use the following syntax to embed the iframe:
-
-::: panel
-<iframe src="../results/fileb8836231d65.html" style="width:100%; height:600px; border:none;" title="antigenic map">
-
-</iframe>
-:::
