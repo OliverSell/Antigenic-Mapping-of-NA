@@ -17,6 +17,7 @@ library("dplyr")
 library("tidyverse")
 library("Racmacs")
 library("RColorBrewer")
+library("sf")
 ```
 
 # Antigenic Cartography - COVID
@@ -126,6 +127,16 @@ titer_clean <- titer_dirty |>
   dplyr::select(-matches("col"), -"Antigen names") |>
   relocate(c("serum_passage","serum_species"), .after = "Omicron")
 
+
+#Getting data ready for mapping
+titer_clean <- titer_clean |> 
+  slice(-(1)) |> 
+  as_tibble() |> 
+  column_to_rownames(var = "serum_id") |> 
+  dplyr::select(!(c("serum_passage", "serum_species"))) |> 
+  mutate(across(everything(), ~replace_na(., "*"))) |> 
+  t()
+
 #######################
 ### Attribute Table ###
 #######################
@@ -142,37 +153,116 @@ attr_table <- titer_table |>
 Antigenic mapping
 
 ```{r}
+### GGPLOT ATTEMPT ###
+options(RacOptimizer.num_cores = 1)
+
+acmap_obj <- acmap(
+  titer_table = titer_clean
+)
+
+# Perform some optimization runs on the map object to try and determine a best map
+acmap_obj <- optimizeMap(
+  map                     = acmap_obj,
+  number_of_dimensions    = 2,
+  number_of_optimizations = 10000,
+  minimum_column_basis    = "none"
+)
+
+colours <- rainbow(10)
+colours <- topo.colors(10)
+agFill(acmap_obj) <- colours
+
+# S3 method for acmap
+ggplot(
+  data = acmap_obj,
+  mapping = NULL,
+  optimization_number = 1,
+  xlim = NULL,
+  ylim = NULL,
+  plot_ags = TRUE,
+  plot_sr = TRUE,
+  plot_blobs = TRUE,
+  plot_hemisphering = TRUE,
+  show_procrustes = TRUE,
+  show_error_lines = FALSE,
+  plot_stress = FALSE,
+  indicate_outliers = "arrowheads",
+  grid.col = "grey90",
+  grid.lwd = 0.5,
+  grid.margin.col = "grey50",
+  grid.margin.lwd = 0.5,
+  fill.alpha = 0.8,
+  outline.alpha = 0.8,
+  padding = 1,
+  arrow_angle = 25,
+  arrow_length = 0.2,
+  margins = rep(0.5, 4),
+  environment = NULL
+)
+
+variants <- acmap_obj$antigens
+variants <- sapply(variants, function(x) x$name)
+
+map_legend <- setLegend(acmap_obj, legend_names, colours, style.bottom = "8px", style.right = "8px")
+
+ggplot(data = acmap_obj,
+       map_legend,
+       # plot_labels = "variants",
+       # ggplot2::scale_fill_identity(),
+       mapping = NULL,
+       optimization_number = 1,
+       xlim = NULL,
+       ylim = NULL,
+       plot_ags = TRUE,
+       plot_sr = TRUE,
+       plot_blobs = TRUE,
+       plot_hemisphering = TRUE,
+       show_procrustes = TRUE,
+       show_error_lines = FALSE,
+       plot_stress = FALSE,
+       indicate_outliers = "arrowheads",
+       grid.col = "grey90",
+       grid.lwd = 0.5,
+       grid.margin.col = "grey50",
+       grid.margin.lwd = 0.5,
+       fill.alpha = 0.8,
+       outline.alpha = 0.8,
+       padding = 1,
+       arrow_angle = 25,
+       arrow_length = 0.2,
+       margins = rep(0.5, 4)) +
+  labs(title = "Antigenic Mapping of COVID",
+       subtitle = "Difference between COVID variants by dimensional scaling",
+       x = "Dimension 1",
+       y = "Dimension 2",
+       fill = "Variants") +
+  theme(
+    axis.title.x = element_text(color = "black"),
+    axis.title.y = element_text(color = "black"))
+
+
+```
+
+```{r}
 #Setting core options. Not sure what it does exactly but is needed
 options(RacOptimizer.num_cores = 1)
 
-
-
-#Getting data ready for mapping
-titer_clean_values <- titer_clean |> 
-  slice(-(1)) |> 
-  as_tibble() |> 
-  column_to_rownames(var = "serum_id") |> 
-  dplyr::select(!(c("serum_passage", "serum_species"))) |> 
-  mutate(across(everything(), ~replace_na(., "*"))) |> 
-  t()
-
-
-
+################
 ####TESTING####
-str(titer_clean_values)
+str(titer_clean)
 #View(titer_)
-
 testtable <- matrix(2 ^ (1:6) * 10, 6, 4)
 str(testtable)
-
-####----####
+######----######
+################
 
 #Getting the strain names
-legend_names <- rownames(titer_clean_values)
+legend_names <- rownames(titer_clean)
+
 
 # Create the acmap object, specifying the titer table
 map <- acmap(
-  titer_table = titer_clean_values
+  titer_table = titer_clean
 )
 
 # Perform some optimization runs on the map object to try and determine a best map
