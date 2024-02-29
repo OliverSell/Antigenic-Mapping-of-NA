@@ -24,8 +24,6 @@ library("sf")
 
 Antigen names; H69775 (Wuhan), Alpha (B.1.1.7), Beta (B.1.351), Gamma (P.1), Delta B.1.617.2, Delta AY.33, Delta AY.4, Delta AY.4.2, Delta B.1.617.2 and E484K Omicron
 
-Loading the data
-
 ```{r}
 #| echo: false
 #| message: false
@@ -34,11 +32,11 @@ Loading the data
 titer_table <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv")
 ```
 
-Functions that count the axis
-
 ```{r}
 #| echo: false
 #| message: false
+
+#Functions that count the axis
 
 print("The amount of virus strains are:")
 #Count the number of virus strains
@@ -72,10 +70,10 @@ check_empty <- function(column) {
 
 ```
 
-Data wrangling
+## Data wrangling
 
 ```{r}
-
+#| warning: false
 #######################
 ### Serum ID string ###
 #######################
@@ -150,7 +148,7 @@ attr_table <- titer_table |>
 
 ```
 
-Antigenic mapping
+## Visualization (attempt) with ggplot2
 
 ```{r}
 ### GGPLOT ATTEMPT ###
@@ -203,6 +201,7 @@ ggplot(
 variants <- acmap_obj$antigens
 variants <- sapply(variants, function(x) x$name)
 
+legend_names <- rownames(titer_clean)
 map_legend <- setLegend(acmap_obj, legend_names, colours, style.bottom = "8px", style.right = "8px")
 
 ggplot(data = acmap_obj,
@@ -243,16 +242,18 @@ ggplot(data = acmap_obj,
 
 ```
 
+## Visualization with Racmacs viewer
+
 ```{r}
 #Setting core options. Not sure what it does exactly but is needed
 options(RacOptimizer.num_cores = 1)
 
 ################
 ####TESTING####
-str(titer_clean)
+# str(titer_clean)
 #View(titer_)
-testtable <- matrix(2 ^ (1:6) * 10, 6, 4)
-str(testtable)
+#testtable <- matrix(2 ^ (1:6) * 10, 6, 4)
+#str(testtable)
 ######----######
 ################
 
@@ -297,7 +298,7 @@ plot(map_legend,
      #optimization_number = 10,
      grid.margin.col = "grey90",
      procrustes.col = "hotpink",
-     show_error_lines = TRUE)
+     show_error_lines = FALSE)
 
 #Trying with ggplot #####THIS SECTION IS FOR MAGNUS AND HIS BEAUTIFUL PLOTS####
 
