@@ -18,6 +18,9 @@ library("tidyverse")
 library("Racmacs")
 library("RColorBrewer")
 library("sf")
+library("devtools")
+# devtools::install_github("yulab-smu/ggacmap")
+library(ggacmap)
 ```
 
 # Antigenic Cartography - COVID
@@ -146,6 +149,163 @@ attr_table <- titer_table |>
   slice(-(1:4)) |>
   set_colnames_from_row(row_number = 1)
 
+
+# Group 1 - 2, 11, 18, 21, 40, 43, 46, 56
+# Group 2 - 7, 19, 29, 32, 37, 39, 45, 59
+# Group 3 - 1, 15, 25, 33, 35, 38, 44, 48
+# Group 4a - 16, 31, 41, 54
+# Group 4b -9, 12, 28, 34
+```
+
+## Visualization with ggacmap
+
+```{r}
+options(RacOptimizer.num_cores = 1)
+
+acmap_obj <- acmap(
+  titer_table = titer_clean
+)
+# Perform some optimization runs on the map object to try and determine a best map
+acmap_obj <- optimizeMap(
+  map                     = acmap_obj,
+  number_of_dimensions    = 2,
+  number_of_optimizations = 10000,
+  minimum_column_basis    = "none"
+)
+
+
+##Saving the acmap_obj
+# Define the path to the 'results' directory relative to the 'R' directory
+results_directory <- file.path(getwd(), "../results")
+# Create the directory if it doesn't exist
+if(!dir.exists(results_directory)) {
+  dir.create(results_directory, recursive = TRUE)
+}
+
+# Create a temporary file within the 'results' directory
+tmp <- tempfile(tmpdir = results_directory, fileext = ".ace")
+
+save.acmap(acmap_obj, 
+     file = tmp)
+
+
+########################
+covid_map <- read.acmap(file = tmp)
+
+########################
+# Step 1: Extract Coordinates
+ag_coords <- agCoords(covid_map)  # Antigen coordinates
+sr_coords <- srCoords(covid_map)  # Serum coordinates
+
+# Step 2: Extract Fill Colors
+colours <- rainbow(10)
+agFill(covid_map) <- colours
+ag_fill <- agFill(covid_map)  # Antigen fill colors
+
+sr_fill <- rep('grey', length(srCoords(covid_map)))  # Assuming sera fill color is grey
+
+
+# Step 3: Combine into Data Frame
+# Combine antigen and serum data
+dd <- rbind(
+  data.frame(
+    x = ag_coords[,1], 
+    y = ag_coords[,2], 
+    fill = ag_fill, 
+    type = 'AG'),
+  data.frame(
+    x = sr_coords[,1], 
+    y = sr_coords[,2], 
+    fill = sr_fill, 
+    type = 'SR')
+)
+
+antigenic_group <- covid_map$antigens
+antigenic_group <- sapply(antigenic_group, function(x) x$name)
+
+dd <- dd |>
+  mutate(antigenic_group = rownames(dd))
+
+
+ggplot(dd) +
+  geom_point(aes(x = x, 
+                 y = y, 
+                 color = antigenic_group, 
+                 shape = type, 
+                 size = type)) +
+  scale_shape_manual(values = c("AG" = 16, "SR" = 0)) + 
+  scale_size_manual(values = c("AG" = 6, "SR" = 2)) + 
+  scale_color_manual(values = dd |>
+                       filter(type == "AG") |>
+                       pull(fill) |>
+                       setNames(dd |> 
+                                  filter(type == "AG") |> 
+                                  pull(antigenic_group))) +
+  theme_minimal() +
+  labs(title = "Antigenic Map of COVID Variants",
+       x = "Dimension 1", y = "Dimension 2",
+       color = "Antigenic group", shape = "Type", size = "Type") +
+  guides(color = guide_legend(override.aes = list(size = 5)),
+         shape = "none",
+         size = "none") + # Hide the size legend if it's not meaningful
+  theme(
+    axis.text.x = element_blank(), # Remove x-axis text
+    axis.text.y = element_blank(), # Remove y-axis text
+  )
+
+# Assuming 'dd' is your data frame
+x_range <- range(dd$x, na.rm = TRUE)
+y_range <- range(dd$y, na.rm = TRUE)
+
+# Optionally, expand the range slightly to ensure the border doesn't sit too close to the data points
+expand_margin <- 0.1
+x_range <- x_range + c(-expand_margin, expand_margin)
+y_range <- y_range + c(-expand_margin, expand_margin)
+
+###########################
+ggplot(dd) +
+  geom_point(aes(x = x, 
+                 y = y, 
+                 color = antigenic_group, 
+                 shape = type, 
+                 size = type)) +
+  scale_shape_manual(values = c("AG" = 16, 
+                                "SR" = 0)) +  # Adjusted SR to 1 for hollow squares
+  scale_size_manual(values = c("AG" = 6, 
+                               "SR" = 2)) +  # Example sizes, adjust as needed
+  scale_color_manual(values = dd |>
+                       filter(type == "AG") |>
+                       pull(fill) |>
+                       setNames(dd |> 
+                                  filter(type == "AG") |> 
+                                  pull(antigenic_group))) +
+  theme_minimal() +
+  labs(title = "Antigenic Map of COVID Variants",
+       x = "Dimension 1", 
+       y = "Dimension 2",
+       color = "Antigenic group") +
+  guides(color = guide_legend(override.aes = list(size = 5)),
+         shape = "none",
+         size = "none") + # Hide the size legend if it's not meaningful
+  theme(
+    axis.text.x = element_blank(), 
+    axis.text.y = element_blank(),
+    plot.background = element_blank(), # Remove plot background
+    panel.background = element_blank(), # Remove panel background
+    # panel.grid.major = element_blank(), # Remove grid lines
+    panel.grid.minor = element_blank()
+    ) + 
+  geom_rect(
+      xmin = x_range[1], 
+      xmax = x_range[2], 
+      ymin = y_range[1], 
+      ymax = y_range[2], 
+      color = "darkgrey", 
+      fill = NA, 
+      linewidth = 0.5
+      ) +
+  coord_cartesian(xlim = x_range, 
+                  ylim = y_range) # Adjust plot limits to match the expanded range
 ```
 
 ## Visualization (attempt) with ggplot2
@@ -157,7 +317,7 @@ options(RacOptimizer.num_cores = 1)
 acmap_obj <- acmap(
   titer_table = titer_clean
 )
-
+View(acmap_obj)
 # Perform some optimization runs on the map object to try and determine a best map
 acmap_obj <- optimizeMap(
   map                     = acmap_obj,
@@ -167,46 +327,18 @@ acmap_obj <- optimizeMap(
 )
 
 colours <- rainbow(10)
-colours <- topo.colors(10)
+#colours <- topo.colors(10)
 agFill(acmap_obj) <- colours
 
-# S3 method for acmap
-ggplot(
-  data = acmap_obj,
-  mapping = NULL,
-  optimization_number = 1,
-  xlim = NULL,
-  ylim = NULL,
-  plot_ags = TRUE,
-  plot_sr = TRUE,
-  plot_blobs = TRUE,
-  plot_hemisphering = TRUE,
-  show_procrustes = TRUE,
-  show_error_lines = FALSE,
-  plot_stress = FALSE,
-  indicate_outliers = "arrowheads",
-  grid.col = "grey90",
-  grid.lwd = 0.5,
-  grid.margin.col = "grey50",
-  grid.margin.lwd = 0.5,
-  fill.alpha = 0.8,
-  outline.alpha = 0.8,
-  padding = 1,
-  arrow_angle = 25,
-  arrow_length = 0.2,
-  margins = rep(0.5, 4),
-  environment = NULL
-)
-
-variants <- acmap_obj$antigens
-variants <- sapply(variants, function(x) x$name)
+antigenic_group <- acmap_obj$antigens
+antigenic_group <- sapply(antigenic_group, function(x) x$name)
 
 legend_names <- rownames(titer_clean)
 map_legend <- setLegend(acmap_obj, legend_names, colours, style.bottom = "8px", style.right = "8px")
 
 ggplot(data = acmap_obj,
        map_legend,
-       # plot_labels = "variants",
+       # plot_labels = "antigenic_group",
        # ggplot2::scale_fill_identity(),
        mapping = NULL,
        optimization_number = 1,
