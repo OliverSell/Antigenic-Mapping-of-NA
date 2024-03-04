@@ -199,120 +199,62 @@ ag_coords <- agCoords(covid_map)  # Antigen coordinates
 sr_coords <- srCoords(covid_map)  # Serum coordinates
 
 # Step 2: Extract Fill Colors
-colours <- rainbow(10)
-agFill(covid_map) <- colours
-ag_fill <- agFill(covid_map)  # Antigen fill colors
+# colours <- rainbow(10)
+# agFill(covid_map) <- colours
+# ag_fill <- agFill(covid_map)  # Antigen fill colors
 
-sr_fill <- rep('grey', length(srCoords(covid_map)))  # Assuming sera fill color is grey
+# sr_fill <- rep('grey', length(srCoords(covid_map)))  # Assuming sera fill color is grey
 
-
-# Step 3: Combine into Data Frame
 # Combine antigen and serum data
-dd <- rbind(
-  data.frame(
-    x = ag_coords[,1], 
-    y = ag_coords[,2], 
-    fill = ag_fill, 
-    type = 'AG'),
-  data.frame(
-    x = sr_coords[,1], 
-    y = sr_coords[,2], 
-    fill = sr_fill, 
-    type = 'SR')
-)
 
-antigenic_group <- covid_map$antigens
-antigenic_group <- sapply(antigenic_group, function(x) x$name)
+ag_df <- as.data.frame(ag_coords) %>%
+  mutate(antigenic_group = rownames(ag_coords),
+         type = 'AG')
 
-dd <- dd |>
-  mutate(antigenic_group = rownames(dd))
+sr_df <- as.data.frame(sr_coords) %>%
+  mutate(serum = rownames(sr_coords),
+         type = 'SR')
+
+dd <- bind_rows(ag_df, sr_df)
+
+dd <- dd |> mutate(serum_group = attr_table$"Serum passages:"[match(dd$serum, attr_table$"Serum IDs:")])
 
 ###########################
-ggplot(dd) +
-  geom_point(aes(x = x, 
-                 y = y, 
-                 color = antigenic_group, 
-                 shape = type, 
-                 size = type)) +
-  scale_shape_manual(values = c("AG" = 16, 
-                                "SR" = 0)) +  # Adjusted SR to 1 for hollow squares
-  scale_size_manual(values = c("AG" = 6, 
-                               "SR" = 2)) +  # Example sizes, adjust as needed
-  scale_color_manual(values = dd |>
-                       filter(type == "AG") |>
-                       pull(fill) |>
-                       setNames(dd |> 
-                                  filter(type == "AG") |> 
-                                  pull(antigenic_group))) +
-  theme_minimal() +
-  labs(title = "Antigenic map of SARS-CoV-2 variants",
-       subtitle = "Neutralization titers across variants analyzed via pseudotype virus assay",
-       x = "MSD-1", 
-       y = "MSD-2",
-       color = "Antigenic group",
-       caption = "Wilks et al., 2023") +
-  guides(color = guide_legend(override.aes = list(size = 5)),
-         shape = "none",
-         size = "none") + # Hide the size legend if it's not meaningful
-  theme(
-    axis.text.x = element_blank(), 
-    axis.text.y = element_blank(),
-    plot.background = element_blank(), # Remove plot background
-    panel.background = element_blank(), # Remove panel background
-    # panel.grid.major = element_blank(), # Remove grid lines
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "darkgrey", 
-                                fill=NA, 
-                                size=1.5),
-    plot.caption = element_text(hjust = 1, vjust = 1, margin = margin(t = -10, unit = "pt"), size = 12, color = "darkgrey", face = "italic"),
-    legend.box.spacing = unit(10, "pt"),
-    plot.margin = margin(t = 20, 
-                         r = 10, 
-                         b = 5, 
-                         l = 15, 
-                         unit = "pt"),
-    plot.subtitle = element_text(margin = margin(t = 2,
-                                                 b = 10, 
-                                                 unit = "pt")),
-    plot.title = element_text(face = "bold"),
-    plot.caption.position = "plot",
-    plot.title.position = "plot",
-    legend.position = "right"
-    ) 
-
-###########################
-
-library("viridis")
-
-# Step 1: Generate colors
 unique_AG <- dd |> filter(type == "AG") |> pull(antigenic_group) |> unique()
 colors_for_AG <- setNames(viridis::viridis(length(unique_AG), option = "turbo"), unique_AG)
 
+unique_SR <- dd |> filter(type == "SR") |> pull(serum_group) |> unique()
+colors_for_SR <- setNames(viridis::viridis(length(unique_SR), option = "viridis"), unique_SR) #heat.colors(n = length(unique_SR), alpha = 0.9, rev = FALSE)
+  
+
 # Step 2: Plot
 ggplot(dd) +
-   geom_point(data = filter(dd, 
+  geom_point(data = filter(dd, 
+                           type == "SR"), 
+             aes(x = V1, 
+                 y = V2, 
+                 shape = type,
+                 color = serum_group), 
+             size = 2,
+             shape = 0,
+             stroke = 0.5) +
+  geom_point(data = filter(dd, 
                             type == "AG"), 
-             aes(x = x, 
-                 y = y, 
+             aes(x = V1, 
+                 y = V2, 
                  fill = antigenic_group), 
              shape = 21, 
              size = 6, 
              color = "black") +
-  geom_point(data = filter(dd, 
-                           type == "SR"), 
-             aes(x = x, 
-                 y = y, 
-                 shape = type), 
-             size = 2,
-             shape = 0,
-             color = "darkgrey") +
   scale_fill_manual(values = colors_for_AG) +
+  scale_color_manual(values = colors_for_SR) +
   theme_minimal() +
   labs(title = "Antigenic map of SARS-CoV-2 variants",
-       subtitle = "Neutralization titers across variants analyzed via pseudotype virus assay",
+       subtitle = "Neutralization titers analyzed via pseudotype virus assay",
        x = "MSD-1", 
        y = "MSD-2",
        fill = "Antigenic group",
+       color = "Serum group",
        caption = "Wilks et al., 2023") +
   guides(fill = guide_legend(override.aes = list(size = 5)),
          shape = "none",
@@ -327,7 +269,7 @@ ggplot(dd) +
     panel.border = element_rect(colour = "darkgrey", 
                                 fill=NA, 
                                 size=1.5),
-    plot.caption = element_text(hjust = 1, vjust = 1, margin = margin(t = -10, unit = "pt"), size = 12, color = "darkgrey", face = "italic"),
+    plot.caption = element_text(hjust = 1, vjust = 1, margin = margin(t = 1, unit = "pt"), size = 12, color = "darkgrey", face = "italic"),
     legend.box.spacing = unit(10, "pt"),
     plot.margin = margin(t = 20, 
                          r = 10, 
@@ -340,36 +282,15 @@ ggplot(dd) +
     plot.title = element_text(face = "bold"),
     plot.caption.position = "plot",
     plot.title.position = "plot",
-    legend.position = "right"
+    legend.position = "right",
+    legend.spacing.y = unit(-7, "pt")
     )
 ```
 
 ## Visualization (attempt) with ggplot2
 
 ```{r}
-### GGPLOT ATTEMPT ###
-options(RacOptimizer.num_cores = 1)
-
-acmap_obj <- acmap(
-  titer_table = titer_clean
-)
-View(acmap_obj)
-# Perform some optimization runs on the map object to try and determine a best map
-acmap_obj <- optimizeMap(
-  map                     = acmap_obj,
-  number_of_dimensions    = 2,
-  number_of_optimizations = 10000,
-  minimum_column_basis    = "none"
-)
-
-colours <- rainbow(10)
-#colours <- topo.colors(10)
-agFill(acmap_obj) <- colours
-
-antigenic_group <- acmap_obj$antigens
-antigenic_group <- sapply(antigenic_group, function(x) x$name)
-
-legend_names <- rownames(titer_clean)
+"""
 map_legend <- setLegend(acmap_obj, legend_names, colours, style.bottom = "8px", style.right = "8px")
 
 ggplot(data = acmap_obj,
@@ -406,7 +327,7 @@ ggplot(data = acmap_obj,
   theme(
     axis.title.x = element_text(color = "black"),
     axis.title.y = element_text(color = "black"))
-
+"""
 
 ```
 
