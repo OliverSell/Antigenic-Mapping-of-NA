@@ -1,0 +1,146 @@
+## Source functions
+
+```{r}
+source("../R/99_proj_func.R")
+```
+
+## Libraries:
+
+```{r}
+#| message: false
+library("tidyverse")
+library("dplyr")
+
+```
+
+## Load data
+
+```{r}
+titer_table <- read_tsv("../data/titer_table.tsv.gz")
+
+```
+
+
+## Cleaning data
+
+```{r}
+#| echo: false
+#| message: false
+
+#Functions that count the axis
+
+print("The amount of virus strains are:")
+#Count the number of virus strains
+titer_table |> 
+  select("...2") |> 
+  slice(9:n()) |> 
+  filter_all(any_vars(!is.na(.))) |> 
+  nrow()
+
+
+print("The amount of antigen sera are:")
+#Count the number of antigen sera. Not really "tidyverse" but it works
+titer_table |> 
+  slice(6) |> 
+  select(-c(1:5)) |> 
+  as.list() |>
+  map_lgl(~ !is.na(.)) |> 
+  sum()
+
+# Function to check if 80% of a column is empty
+check_empty <- function(column) {
+  empty_count <- sum(is.na(column) | column == "")
+  return(empty_count >= 0.8 * length(column))
+}
+
+# Using tidyverse functions to check if 80% of each column is empty
+#empty_columns <- titer_dirty %>%
+#  map_lgl(check_empty)
+
+
+
+```
+
+## Data wrangling
+
+```{r}
+#| warning: false
+#######################
+### Serum ID string ###
+#######################
+
+serum_ids <- titer_table |>
+  slice(6) |> # Select the row with Serum IDs
+  dplyr::select(where(~ any(!is.na(.)))) |> #Remove NA
+  unlist() |> # Flatten it to a vector 
+  as.character()
+
+
+set_colnames_from_row <- function(tbl, row_number = 1) {
+  # Check if the specified row number is within the number of rows in the table
+  if(row_number > nrow(tbl) | row_number < 1) {
+    stop("The specified row number is out of bounds.")
+  }
+  # Set column names from the specified row
+  colnames(tbl) <- as.character(unlist(tbl[row_number, ]))
+  #colnames(tbl) <- paste0("Col",as.character(unlist(tbl[row_number, ])))
+  
+  # Remove the row that was used for column names
+  tbl <- tbl[-row_number, ]
+  
+  return(tbl)
+}
+
+########################
+#### Titer Cleaning ####
+########################
+titer_dirty <- titer_table |>
+  # Remove first with meta data.
+  slice(-(1:4)) |>
+  # Remove coloumns that have no data. 
+  # Function keeps columns with at least one value is not NA. 
+  dplyr::select(where(~ any(!is.na(.)))) |> 
+  t() |>
+  as_tibble() |>
+  set_colnames_from_row(row_number = 2)
+
+names(titer_dirty)[1] <- "serum_passage"
+names(titer_dirty)[2] <- "serum_id"
+names(titer_dirty)[3] <- "serum_species"
+clean_names <- map_chr(names(titer_dirty), ~ifelse(is.na(.x) | .x == "", paste0("col", which(names(titer_dirty) == .x)), .x))
+unique_clean_names <- make.unique(clean_names)
+names(titer_dirty) <- unique_clean_names
+
+titer_clean <- titer_dirty |>
+  slice(-c(1, 2, 3)) |>
+  dplyr::select(-matches("col"), -"Antigen names") |>
+  relocate(c("serum_passage","serum_species"), .after = "Omicron")
+
+
+#Getting data ready for mapping
+titer_clean <- titer_clean |> 
+  slice(-(1)) |> 
+  as_tibble() |> 
+  column_to_rownames(var = "serum_id") |> 
+  dplyr::select(!(c("serum_passage", "serum_species"))) |> 
+  mutate(across(everything(), ~replace_na(., "*"))) |> 
+  t()
+
+#######################
+### Attribute Table ###
+#######################
+attr_table <- titer_table |>
+  slice(-(1:4)) |>
+  slice_head(n = 3) |>
+  t() |>
+  as_tibble() |>
+  slice(-(1:4)) |>
+  set_colnames_from_row(row_number = 1)
+
+
+# Group 1 - 2, 11, 18, 21, 40, 43, 46, 56
+# Group 2 - 7, 19, 29, 32, 37, 39, 45, 59
+# Group 3 - 1, 15, 25, 33, 35, 38, 44, 48
+# Group 4a - 16, 31, 41, 54
+# Group 4b -9, 12, 28, 34
+```

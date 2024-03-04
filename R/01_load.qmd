@@ -1,0 +1,46 @@
+## Source functions
+
+```{r}
+source("../R/99_proj_func.R")
+```
+
+## Libraries
+
+```{r}
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+
+library("tidyverse")
+```
+
+# Antigenic Cartography - COVID
+
+Antigen names; H69775 (Wuhan), Alpha (B.1.1.7), Beta (B.1.351), Gamma (P.1), Delta B.1.617.2, Delta AY.33, Delta AY.4, Delta AY.4.2, Delta B.1.617.2 and E484K Omicron
+
+## Generate data directories
+```{r}
+make_dir("../_raw")
+make_dir("../data")
+```
+
+## Loading data
+```{r}
+#| echo: false
+#| message: false
+#| output: false
+
+## Loading titer data
+titer_table <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv")
+
+```
+
+## Writing files
+```{r}
+
+## Writing titer file
+write_tsv(titer_table,
+            file = "../data/titer_table.tsv.gz")
+
+```

@@ -1,0 +1,11 @@
+
+```{r}
+library("quarto")
+
+quarto::quarto_render("01_load.qmd")
+quarto::quarto_render("02_clean.qmd")
+quarto::quarto_render("03_describe.qmd")
+quarto::quarto_render("04_augment.qmd")
+quarto::quarto_render("05_analysis_1.qmd")
+quarto::quarto_render("06_analysis_2.qmd")
+```
