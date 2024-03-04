@@ -18,6 +18,7 @@ library("tidyverse")
 library("Racmacs")
 library("RColorBrewer")
 library("sf")
+library("viridis")
 library("devtools")
 # devtools::install_github("yulab-smu/ggacmap")
 library(ggacmap)
@@ -226,42 +227,6 @@ antigenic_group <- sapply(antigenic_group, function(x) x$name)
 dd <- dd |>
   mutate(antigenic_group = rownames(dd))
 
-
-ggplot(dd) +
-  geom_point(aes(x = x, 
-                 y = y, 
-                 color = antigenic_group, 
-                 shape = type, 
-                 size = type)) +
-  scale_shape_manual(values = c("AG" = 16, "SR" = 0)) + 
-  scale_size_manual(values = c("AG" = 6, "SR" = 2)) + 
-  scale_color_manual(values = dd |>
-                       filter(type == "AG") |>
-                       pull(fill) |>
-                       setNames(dd |> 
-                                  filter(type == "AG") |> 
-                                  pull(antigenic_group))) +
-  theme_minimal() +
-  labs(title = "Antigenic Map of COVID Variants",
-       x = "Dimension 1", y = "Dimension 2",
-       color = "Antigenic group", shape = "Type", size = "Type") +
-  guides(color = guide_legend(override.aes = list(size = 5)),
-         shape = "none",
-         size = "none") + # Hide the size legend if it's not meaningful
-  theme(
-    axis.text.x = element_blank(), # Remove x-axis text
-    axis.text.y = element_blank(), # Remove y-axis text
-  )
-
-# Assuming 'dd' is your data frame
-x_range <- range(dd$x, na.rm = TRUE)
-y_range <- range(dd$y, na.rm = TRUE)
-
-# Optionally, expand the range slightly to ensure the border doesn't sit too close to the data points
-expand_margin <- 0.1
-x_range <- x_range + c(-expand_margin, expand_margin)
-y_range <- y_range + c(-expand_margin, expand_margin)
-
 ###########################
 ggplot(dd) +
   geom_point(aes(x = x, 
@@ -280,10 +245,12 @@ ggplot(dd) +
                                   filter(type == "AG") |> 
                                   pull(antigenic_group))) +
   theme_minimal() +
-  labs(title = "Antigenic Map of COVID Variants",
-       x = "Dimension 1", 
-       y = "Dimension 2",
-       color = "Antigenic group") +
+  labs(title = "Antigenic map of SARS-CoV-2 variants",
+       subtitle = "Neutralization titers across variants analyzed via pseudotype virus assay",
+       x = "MSD-1", 
+       y = "MSD-2",
+       color = "Antigenic group",
+       caption = "Wilks et al., 2023") +
   guides(color = guide_legend(override.aes = list(size = 5)),
          shape = "none",
          size = "none") + # Hide the size legend if it's not meaningful
@@ -293,19 +260,88 @@ ggplot(dd) +
     plot.background = element_blank(), # Remove plot background
     panel.background = element_blank(), # Remove panel background
     # panel.grid.major = element_blank(), # Remove grid lines
-    panel.grid.minor = element_blank()
-    ) + 
-  geom_rect(
-      xmin = x_range[1], 
-      xmax = x_range[2], 
-      ymin = y_range[1], 
-      ymax = y_range[2], 
-      color = "darkgrey", 
-      fill = NA, 
-      linewidth = 0.5
-      ) +
-  coord_cartesian(xlim = x_range, 
-                  ylim = y_range) # Adjust plot limits to match the expanded range
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(colour = "darkgrey", 
+                                fill=NA, 
+                                size=1.5),
+    plot.caption = element_text(hjust = 1, vjust = 1, margin = margin(t = -10, unit = "pt"), size = 12, color = "darkgrey", face = "italic"),
+    legend.box.spacing = unit(10, "pt"),
+    plot.margin = margin(t = 20, 
+                         r = 10, 
+                         b = 5, 
+                         l = 15, 
+                         unit = "pt"),
+    plot.subtitle = element_text(margin = margin(t = 2,
+                                                 b = 10, 
+                                                 unit = "pt")),
+    plot.title = element_text(face = "bold"),
+    plot.caption.position = "plot",
+    plot.title.position = "plot",
+    legend.position = "right"
+    ) 
+
+###########################
+
+library("viridis")
+
+# Step 1: Generate colors
+unique_AG <- dd |> filter(type == "AG") |> pull(antigenic_group) |> unique()
+colors_for_AG <- setNames(viridis::viridis(length(unique_AG), option = "turbo"), unique_AG)
+
+# Step 2: Plot
+ggplot(dd) +
+   geom_point(data = filter(dd, 
+                            type == "AG"), 
+             aes(x = x, 
+                 y = y, 
+                 fill = antigenic_group), 
+             shape = 21, 
+             size = 6, 
+             color = "black") +
+  geom_point(data = filter(dd, 
+                           type == "SR"), 
+             aes(x = x, 
+                 y = y, 
+                 shape = type), 
+             size = 2,
+             shape = 0,
+             color = "darkgrey") +
+  scale_fill_manual(values = colors_for_AG) +
+  theme_minimal() +
+  labs(title = "Antigenic map of SARS-CoV-2 variants",
+       subtitle = "Neutralization titers across variants analyzed via pseudotype virus assay",
+       x = "MSD-1", 
+       y = "MSD-2",
+       fill = "Antigenic group",
+       caption = "Wilks et al., 2023") +
+  guides(fill = guide_legend(override.aes = list(size = 5)),
+         shape = "none",
+         size = "none") + # Hide the size legend if it's not meaningful
+  theme(
+    axis.text.x = element_blank(), 
+    axis.text.y = element_blank(),
+    plot.background = element_blank(), # Remove plot background
+    panel.background = element_blank(), # Remove panel background
+    # panel.grid.major = element_blank(), # Remove grid lines
+    panel.grid.minor = element_blank(),
+    panel.border = element_rect(colour = "darkgrey", 
+                                fill=NA, 
+                                size=1.5),
+    plot.caption = element_text(hjust = 1, vjust = 1, margin = margin(t = -10, unit = "pt"), size = 12, color = "darkgrey", face = "italic"),
+    legend.box.spacing = unit(10, "pt"),
+    plot.margin = margin(t = 20, 
+                         r = 10, 
+                         b = 5, 
+                         l = 15, 
+                         unit = "pt"),
+    plot.subtitle = element_text(margin = margin(t = 2,
+                                                 b = 10, 
+                                                 unit = "pt")),
+    plot.title = element_text(face = "bold"),
+    plot.caption.position = "plot",
+    plot.title.position = "plot",
+    legend.position = "right"
+    )
 ```
 
 ## Visualization (attempt) with ggplot2
