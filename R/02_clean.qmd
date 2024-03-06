@@ -10,18 +10,17 @@ source("../R/99_proj_func.R")
 #| message: false
 library("tidyverse")
 library("dplyr")
-
+library("janitor")
 ```
 
 ## Load data
 
 ```{r}
-titer_table <- read_tsv("../data/titer_table.tsv.gz")
+titer_table_covid <- read_tsv("../data/titer_table.tsv.gz")
 
 ```
 
-
-## Cleaning data
+## Counting dimensions
 
 ```{r}
 #| echo: false
@@ -61,7 +60,7 @@ check_empty <- function(column) {
 
 ```
 
-## Data wrangling
+## Fetching Serum ID's
 
 ```{r}
 #| warning: false
@@ -74,58 +73,49 @@ serum_ids <- titer_table |>
   dplyr::select(where(~ any(!is.na(.)))) |> #Remove NA
   unlist() |> # Flatten it to a vector 
   as.character()
+```
 
+## Data wrangling
 
-set_colnames_from_row <- function(tbl, row_number = 1) {
-  # Check if the specified row number is within the number of rows in the table
-  if(row_number > nrow(tbl) | row_number < 1) {
-    stop("The specified row number is out of bounds.")
-  }
-  # Set column names from the specified row
-  colnames(tbl) <- as.character(unlist(tbl[row_number, ]))
-  #colnames(tbl) <- paste0("Col",as.character(unlist(tbl[row_number, ])))
-  
-  # Remove the row that was used for column names
-  tbl <- tbl[-row_number, ]
-  
-  return(tbl)
-}
+```{r}
 
 ########################
 #### Titer Cleaning ####
 ########################
-titer_dirty <- titer_table |>
+titer_dirty <- titer_table_covid |>
   # Remove first with meta data.
-  slice(-(1:4)) |>
+  slice(-(1:8)) |>
   # Remove coloumns that have no data. 
   # Function keeps columns with at least one value is not NA. 
   dplyr::select(where(~ any(!is.na(.)))) |> 
-  t() |>
-  as_tibble() |>
-  set_colnames_from_row(row_number = 2)
+  set_colnames_from_row(row_number = 1) |> 
+  t() |> 
+  as_tibble(rownames = NA) |> 
+  slice(-(1:2)) |> 
+  select(where(~ !(all(is.na(.)) | all(. == "")))) |> 
+  set_colnames_from_row(row_number = 1) |> 
+  select(-1) |> 
+  as.data.frame()
 
-names(titer_dirty)[1] <- "serum_passage"
-names(titer_dirty)[2] <- "serum_id"
-names(titer_dirty)[3] <- "serum_species"
-clean_names <- map_chr(names(titer_dirty), ~ifelse(is.na(.x) | .x == "", paste0("col", which(names(titer_dirty) == .x)), .x))
-unique_clean_names <- make.unique(clean_names)
-names(titer_dirty) <- unique_clean_names
+  
+sera_names <- titer_table_covid |>
+  slice(-(1:8)) |>
+  dplyr::select(where(~ any(!is.na(.)))) |> 
+  head(1) |> 
+  select(-(1:3)) |> 
+  as_vector()
 
-titer_clean <- titer_dirty |>
-  slice(-c(1, 2, 3)) |>
-  dplyr::select(-matches("col"), -"Antigen names") |>
-  relocate(c("serum_passage","serum_species"), .after = "Omicron")
+row.names(titer_dirty) <- sera_names
 
+titer_clean <- t(titer_dirty)
 
+class(titer_clean)
 #Getting data ready for mapping
 titer_clean <- titer_clean |> 
-  slice(-(1)) |> 
-  as_tibble() |> 
-  column_to_rownames(var = "serum_id") |> 
-  dplyr::select(!(c("serum_passage", "serum_species"))) |> 
-  mutate(across(everything(), ~replace_na(., "*"))) |> 
-  t()
+  as.data.frame() |> 
+  mutate(across(everything(), ~replace_na(.x, "*")))
 
+View(titer_clean)
 #######################
 ### Attribute Table ###
 #######################
@@ -144,3 +134,4 @@ attr_table <- titer_table |>
 # Group 4a - 16, 31, 41, 54
 # Group 4b -9, 12, 28, 34
 ```
+

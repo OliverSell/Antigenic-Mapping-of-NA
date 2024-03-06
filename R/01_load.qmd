@@ -32,7 +32,7 @@ make_dir("../data")
 #| output: false
 
 ## Loading titer data
-titer_table <- read_csv2(file = "../_raw/ac-3.0-Rabbit sera with Omicron_25-01-2022.csv")
+titer_table <- read_csv2(file = "../_raw/antigenic_map_template_covid.csv")
 
 ```
 
