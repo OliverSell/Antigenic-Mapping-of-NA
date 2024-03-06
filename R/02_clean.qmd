@@ -10,69 +10,13 @@ source("../R/99_proj_func.R")
 #| message: false
 library("tidyverse")
 library("dplyr")
-library("janitor")
+library("Racmacs")
 ```
 
 ## Load data
 
 ```{r}
 titer_table_covid <- read_tsv("../data/titer_table.tsv.gz")
-
-```
-
-## Counting dimensions
-
-```{r}
-#| echo: false
-#| message: false
-
-#Functions that count the axis
-
-print("The amount of virus strains are:")
-#Count the number of virus strains
-titer_table |> 
-  select("...2") |> 
-  slice(9:n()) |> 
-  filter_all(any_vars(!is.na(.))) |> 
-  nrow()
-
-
-print("The amount of antigen sera are:")
-#Count the number of antigen sera. Not really "tidyverse" but it works
-titer_table |> 
-  slice(6) |> 
-  select(-c(1:5)) |> 
-  as.list() |>
-  map_lgl(~ !is.na(.)) |> 
-  sum()
-
-# Function to check if 80% of a column is empty
-check_empty <- function(column) {
-  empty_count <- sum(is.na(column) | column == "")
-  return(empty_count >= 0.8 * length(column))
-}
-
-# Using tidyverse functions to check if 80% of each column is empty
-#empty_columns <- titer_dirty %>%
-#  map_lgl(check_empty)
-
-
-
-```
-
-## Fetching Serum ID's
-
-```{r}
-#| warning: false
-#######################
-### Serum ID string ###
-#######################
-
-serum_ids <- titer_table |>
-  slice(6) |> # Select the row with Serum IDs
-  dplyr::select(where(~ any(!is.na(.)))) |> #Remove NA
-  unlist() |> # Flatten it to a vector 
-  as.character()
 ```
 
 ## Data wrangling
@@ -97,7 +41,7 @@ titer_dirty <- titer_table_covid |>
   select(-1) |> 
   as.data.frame()
 
-  
+#Fetches the names of the sera
 sera_names <- titer_table_covid |>
   slice(-(1:8)) |>
   dplyr::select(where(~ any(!is.na(.)))) |> 
@@ -105,33 +49,68 @@ sera_names <- titer_table_covid |>
   select(-(1:3)) |> 
   as_vector()
 
+#Adds sera names
 row.names(titer_dirty) <- sera_names
 
 titer_clean <- t(titer_dirty)
 
-class(titer_clean)
 #Getting data ready for mapping
 titer_clean <- titer_clean |> 
   as.data.frame() |> 
   mutate(across(everything(), ~replace_na(.x, "*")))
 
-View(titer_clean)
+#Defining the amount of sera and antigen
+antigen_sera_n <- ncol(titer_clean)
+virus_strains_n <- nrow(titer_clean)
+
+
 #######################
 ### Attribute Table ###
 #######################
-attr_table <- titer_table |>
-  slice(-(1:4)) |>
-  slice_head(n = 3) |>
-  t() |>
-  as_tibble() |>
-  slice(-(1:4)) |>
-  set_colnames_from_row(row_number = 1)
+attr_table <- titer_table_covid |>
+  slice(-(1:7)) |> 
+  slice_head(n = 2) |> 
+  t() |> 
+  as_tibble() |> 
+  slice(-(1:4)) |> 
+  set_colnames_from_row(row_number = 1) |> 
+  slice_head(n = antigen_sera_n) |> 
+  #Removing semicolon from names
+  rename_with( ~ gsub(":", "", .x))
+
+## Table information
+table_info <- tibble(
+  virus_type = as.character(titer_table_covid[2, 7]),
+  species = as.character(titer_table_covid[2, 9]),
+  viral_protein = as.character(titer_table_covid[4, 7]),
+  assay_type = as.character(titer_table_covid[4, 9])
+)
 
 
-# Group 1 - 2, 11, 18, 21, 40, 43, 46, 56
-# Group 2 - 7, 19, 29, 32, 37, 39, 45, 59
-# Group 3 - 1, 15, 25, 33, 35, 38, 44, 48
-# Group 4a - 16, 31, 41, 54
-# Group 4b -9, 12, 28, 34
+```
+
+## Testing if loading done correctly
+
+```{r}
+options(RacOptimizer.num_cores = 1)
+
+acmap_obj <- acmap(
+  titer_table = titer_clean
+)
+# Perform some optimization runs on the map object to try and determine a best map
+acmap_obj <- optimizeMap(
+  map                     = acmap_obj,
+  number_of_dimensions    = 2,
+  number_of_optimizations = 10000,
+  minimum_column_basis    = "none"
+)
+
+plot(acmap_obj)
+```
+
+Saving the relevant values
+
+```{r}
+
 ```
 
