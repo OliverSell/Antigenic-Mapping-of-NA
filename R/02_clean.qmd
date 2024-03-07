@@ -9,10 +9,14 @@ source("../R/99_proj_func.R")
 ```{r}
 #| message: false
 #| warning: false
+## ASK MARTHA
+## ASK MARTHA
+## ASK MARTHA
+
 library("tidyverse")
 library("dplyr")
 library("Racmacs")
-library(svglite)
+library("svglite")
 library("viridis")
 ```
 
@@ -142,10 +146,23 @@ dd <- dd |> mutate(serum_group = attr_table$"Serum exposure"[match(dd$serum, att
 #     Unique colouring     #
 ############################
 unique_AG <- dd |> filter(type == "AG") |> pull(antigenic_group) |> unique()
-colors_for_AG <- setNames(viridis::viridis(length(unique_AG), option = "turbo"), unique_AG)
+colors_for_AG <- setNames(viridis::viridis(
+  length(unique_AG), 
+  option = "turbo"), 
+  unique_AG)
+## ADD 10% transparency
+## ADD 10% transparency
+## ADD 10% transparency
 
 unique_SR <- dd |> filter(type == "SR") |> pull(serum_group) |> unique()
-colors_for_SR <- setNames(viridis::viridis(length(unique_SR), option = "viridis"), unique_SR) 
+colors_for_SR <- setNames(viridis::viridis(
+  length(unique_SR), 
+  option = "mako"),    # FIX FIX
+  unique_SR) 
+## Find new color gradiant
+## Find new color gradiant
+## Find new color gradiant
+# ATColors <- data.frame(name = c("ATBlue", "ATYellow", "ATOrange"), color= c("#1A73BA", "#F7D364", "#B54B05"))
 
 ############################
 # Generating Antigenic Map #
@@ -188,13 +205,12 @@ ggplot(dd) +
        caption = "Wilks et al., 2023") +
   guides(fill = guide_legend(override.aes = list(size = 5)),
          shape = "none",
-         size = "none") + # Hide the size legend if it's not meaningful
+         size = "none") + 
   theme(
     axis.text.x = element_blank(), 
     axis.text.y = element_blank(),
-    plot.background = element_blank(), # Remove plot background
-    panel.background = element_blank(), # Remove panel background
-    # panel.grid.major = element_blank(), # Remove grid lines
+    plot.background = element_blank(), 
+    panel.background = element_rect(colour = "#0000CD"), ## FIX FIX FIX
     panel.grid.minor = element_blank(),
     panel.border = element_rect(colour = "azure4", 
                                 fill=NA, 
@@ -221,8 +237,6 @@ ggplot(dd) +
     legend.position = "right",
     legend.spacing.y = unit(-7, "pt")
     )
-
-
 
 ```
 
