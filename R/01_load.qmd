@@ -13,6 +13,7 @@ source("../R/99_proj_func.R")
 #| warning: false
 
 library("tidyverse")
+library("readxl")
 ```
 
 # Antigenic Cartography - COVID
@@ -25,14 +26,27 @@ make_dir("../_raw")
 make_dir("../data")
 ```
 
+## Loading excel file
+
+```{r}
+excel_data <- read_excel("../_raw/antigenic_map_template_covid.xlsx")
+
+write_csv(excel_data, "../_raw/excel_csv.csv.gz")
+```
+
+
 ## Loading data
 ```{r}
 #| echo: false
 #| message: false
 #| output: false
 
-## Loading titer data
-titer_table <- read_csv2(file = "../_raw/antigenic_map_template_covid.csv")
+## Loading titer data from pre-made csv file
+#titer_table <- read_csv2(file = "../_raw/antigenic_map_template_covid.csv")
+
+## Loading titer data from generated csv file
+titer_table2 <- read_csv(file = "../_raw/excel_csv.csv.gz")
+
 
 ```
 
