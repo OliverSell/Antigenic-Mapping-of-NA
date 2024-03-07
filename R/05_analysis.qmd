@@ -1,0 +1,26 @@
+---
+title: "Analyse data"
+format: html
+editor: source
+author: authors
+---
+
+### Source functions
+
+```{r}
+source("../R/99_proj_func.R")
+```
+
+### Library
+
+```{r}
+#| eval: true
+#| echo: true
+
+library("tidyverse")
+```
+
+### Loading
+
+
+### Analysis
