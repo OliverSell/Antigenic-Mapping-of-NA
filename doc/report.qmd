@@ -1,0 +1,24 @@
+---
+title: "Antigenic mapping report"
+author: "Magnus Hilarious Ohline Jepsen and Oliver Sellberg"
+date: today
+date-format: "DD/MM/YYYY"
+
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+---
+
+# Antigenic mapping
+
+## Background information
+
+### Dataset
+
+### Output
+
+## Loading and wrangling
+
+## Mapping

@@ -1,0 +1,45 @@
+---
+title: "Interactive viewer"
+execute:
+  echo: false
+
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
+    number-sections: true
+---
+
+# Antigenic mapping
+
+## Background information
+
+```{r}
+#| echo: true
+print(2+2)
+```
+
+Insert hidden code here
+
+```{r}
+#| output: false 
+
+print(2+2)
+```
+
+## Loading code
+
+```{r}
+#| echo: true
+
+
+print(2+2)
+```
+
+## Viewer
+
+```{r}
+
+
+```
