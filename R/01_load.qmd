@@ -14,6 +14,8 @@ source("../R/99_proj_func.R")
 
 library("tidyverse")
 library("readxl")
+
+# https://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
 ```
 
 # Antigenic Cartography - COVID
