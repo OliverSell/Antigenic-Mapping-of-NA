@@ -114,7 +114,6 @@ covid_map <- acmap(
 )
 # Perform optimization runs on the map object to try and determine a best map
 
-
 covid_map <- optimizeMap(
   map                     = covid_map,
   number_of_dimensions    = 2,
@@ -162,19 +161,25 @@ colors_for_AG <- sapply(
   adjustcolor, 
   alpha.f = 0.8)
 
-unique_SR <- dd |> filter(type == "SR") |> pull(serum_group) |> unique()
-colors_for_SR <- setNames(viridis::viridis(
-  length(unique_SR), 
-  option = "mako"),    # FIX FIX
-  unique_SR) 
-## Find new color gradiant
-## Find new color gradiant
-## Find new color gradiant
-# ATColors <- data.frame(name = c("ATBlue", "ATYellow", "ATOrange"), color= c("#1A73BA", "#F7D364", "#B54B05"))
+#unique_SR <- dd |> filter(type == "SR") |> pull(serum_group) |> unique()
+colors_for_SR <- c(
+  rgb(34/255, 10/255, 131/255, 0.9),# blue
+  rgb(142/255, 0/255, 10/255, 0.9), # red
+  rgb(16/255, 121/255, 0/255, 0.9), # green
+  rgb(146/255, 119/255, 0/255, 1.0),# yellow
+  ## tetrad colors ##
+  rgb(107/255, 2/255, 125/255, 0.9),# purple
+  rgb(146/255, 78/255, 0/255, 0.9), # orange/brown
+  rgb(4/255, 82/255, 120/255, 0.9), # aquatic blue
+  rgb(126/255, 142/255, 0/255, 1.0)# lime green
+)
 
 ############################
 # Generating Antigenic Map #
 ############################
+##########
+# Legend #
+##########
 ag_map_1 <- ggplot(dd) +
   geom_point(data = filter(dd, 
                            type == "SR"), 
@@ -184,7 +189,7 @@ ag_map_1 <- ggplot(dd) +
                  color = serum_group), 
              size = 2,
              shape = 0,
-             stroke = 0.5) +
+             stroke = 0.75) +
   geom_point(data = filter(dd, 
                             type == "AG"), 
              aes(x = V1, 
@@ -206,8 +211,8 @@ ag_map_1 <- ggplot(dd) +
                        " analyzed via ", 
                        table_info |> 
                          pull(assay_type)),
-       x = "MSD-1", 
-       y = "MSD-2",
+       x = "", 
+       y = "",
        fill = "Antigenic group",
        color = "Serum group",
        caption = "Wilks et al., 2023") +
@@ -218,7 +223,7 @@ ag_map_1 <- ggplot(dd) +
     axis.text.x = element_blank(), 
     axis.text.y = element_blank(),
     plot.background = element_blank(), 
-    panel.background = element_rect(colour = "#0000CD"), ## FIX FIX FIX
+    panel.background = element_rect(fill = "#E0FFFF50"), # Lightcyan 50% opacity
     panel.grid.minor = element_blank(),
     panel.border = element_rect(colour = "azure4", 
                                 fill=NA, 
@@ -246,7 +251,9 @@ ag_map_1 <- ggplot(dd) +
     legend.spacing.y = unit(-7, "pt")
     )
 
-
+##########
+# Labels #
+##########
 ag_map_2 <- ggplot(dd) +
   geom_point(data = filter(dd, 
                            type == "SR"), 
@@ -256,7 +263,7 @@ ag_map_2 <- ggplot(dd) +
                  color = serum_group), 
              size = 2,
              shape = 0,
-             stroke = 0.5) +
+             stroke = 0.75) +
   
   geom_point(data = filter(dd, 
                             type == "AG"), 
@@ -266,100 +273,26 @@ ag_map_2 <- ggplot(dd) +
              shape = 21, 
              size = 6, 
              color = "black") +
+  coord_cartesian(clip = "off") +
   
-  geom_text_repel(data = filter(dd, 
-                                type == "AG"), 
-                  aes(x = V1, 
-                      y = V2, 
-                      label = antigenic_group), 
-                  size = 3, 
-                  box.padding = unit(1.0, "lines"), 
-                  point.padding = unit(1.0, "lines"),
-                  max.iter = 10000) +
-  
-  scale_fill_manual(values = colors_for_AG) +
-  scale_color_manual(values = colors_for_SR) +
-  theme_minimal() +
-  labs(title = paste0("Antigenic map of ", 
-                         table_info |> 
-                           pull(virus_type),
-                      " variants"),
-       subtitle = paste0("Inhibition titers for ",
-                       table_info |> 
-                         pull(viral_protein),
-                       " analyzed via ", 
-                       table_info |> 
-                         pull(assay_type)),
-       x = "", 
-       y = "",
-       fill = "Antigenic group",
-       color = "Serum group",
-       caption = "Wilks et al., 2023") +
-  guides(fill = guide_legend(override.aes = list(size = 5)),
-         shape = "none",
-         size = "none") + 
-  theme(
-    axis.text.x = element_blank(), 
-    axis.text.y = element_blank(),
-    plot.background = element_blank(), 
-    panel.background = element_rect(colour = "#0000CD"), ## FIX FIX FIX
-    panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "azure4", 
-                                fill=NA, 
-                                size=1.5),
-    plot.caption = element_text(hjust = 1, 
-                                vjust = 1, 
-                                margin = margin(t = 1, 
-                                                unit = "pt"), 
-                                size = 12, 
-                                color = "darkgrey",
-                                face = "italic"),
-    legend.box.spacing = unit(10, "pt"),
-    plot.margin = margin(t = 20, 
-                         r = 10, 
-                         b = 5, 
-                         l = 15, 
-                         unit = "pt"),
-    plot.subtitle = element_text(margin = margin(t = 2,
-                                                 b = 10, 
-                                                 unit = "pt")),
-    plot.title = element_text(face = "bold"),
-    plot.caption.position = "plot",
-    plot.title.position = "plot",
-    legend.position = "none",
-    legend.spacing.y = unit(-7, "pt")
-    )
-
-ggplot(dd) +
-  geom_point(data = filter(dd, 
-                           type == "SR"), 
-             aes(x = V1, 
-                 y = V2, 
-                 shape = type,
-                 color = serum_group), 
-             size = 2,
-             shape = 0,
-             stroke = 0.5) +
-  
-  geom_point(data = filter(dd, 
-                            type == "AG"), 
-             aes(x = V1, 
-                 y = V2, 
-                 fill = antigenic_group), 
-             shape = 21, 
-             size = 6, 
-             color = "black") +
-  
-  geom_label_repel(aes(x = V1, 
+  geom_text_repel(aes(x = V1, 
                        y = V2, 
                        label = antigenic_group),
                   size = 3,
-                  box.padding = unit(0.35, "lines"),
-                  point.padding = unit(0.5, "lines"),
+                  box.padding = unit(0.55, "lines"),
+                  point.padding = unit(1.0, "lines"),
                   segment.linetype = 1,
-                  min.segment.length = 0.7,
+                  min.segment.length = 0.5,
                   arrow = arrow(length = unit(0.015, "npc")),
-                  segment.alpha = 0.7
+                  segment.curvature = 0,
+                  segment.alpha = 0.7,
+                  force_pull = 1.0, #Attraction between label and corresponding data point
+                  force = 1.0, #Repulsion between labels
+                  max.iter = 10000,
+                  xlim = c(-NA,NA),
+                  ylim = c(-NA,NA),
+                  bg.color = "white",
+                  bg.r = 0.10
                   ) +
   
   scale_fill_manual(values = colors_for_AG) +
@@ -380,18 +313,14 @@ ggplot(dd) +
        fill = "Antigenic group",
        color = "Serum group",
        caption = "Wilks et al., 2023") +
-  guides(fill = guide_legend(override.aes = list(size = 5)),
-         shape = "none",
-         size = "none") + 
+  guides(fill = FALSE,  # Hide fill legend
+         color = guide_legend(override.aes = list(size = 2))) + 
   theme(
     axis.text.x = element_blank(), 
     axis.text.y = element_blank(),
     plot.background = element_blank(), 
-    panel.background = element_rect(colour = "#0000CD"), ## FIX FIX FIX
+    panel.background = element_rect(fill = "#E0FFFF50"), # Lightcyan 50% opacity
     panel.grid.minor = element_blank(),
-    panel.border = element_rect(colour = "azure4", 
-                                fill=NA, 
-                                size=1.5),
     plot.caption = element_text(hjust = 1, 
                                 vjust = 1, 
                                 margin = margin(t = 1, 
@@ -400,10 +329,88 @@ ggplot(dd) +
                                 color = "darkgrey",
                                 face = "italic"),
     legend.box.spacing = unit(10, "pt"),
+    panel.border = element_rect(colour = "azure4", 
+                                fill=NA, 
+                                size=1.5),
     plot.margin = margin(t = 20, 
-                         r = 10, 
+                         r = 20, 
                          b = 5, 
-                         l = 15, 
+                         l = 10, 
+                         unit = "pt"),
+    plot.subtitle = element_text(margin = margin(t = 2,
+                                                 b = 10, 
+                                                 unit = "pt")),
+    plot.title = element_text(face = "bold"),
+    plot.caption.position = "plot",
+    plot.title.position = "plot",
+    legend.position = "right",
+    legend.spacing.y = unit(-7, "pt")
+    )
+
+##########
+# Plain  #
+##########
+ag_map_3 <- ggplot(dd) +
+  geom_point(data = filter(dd, 
+                           type == "SR"), 
+             aes(x = V1, 
+                 y = V2, 
+                 shape = type,
+                 color = serum_group), 
+             size = 2,
+             shape = 0,
+             stroke = 0.75) +
+  
+  geom_point(data = filter(dd, 
+                            type == "AG"), 
+             aes(x = V1, 
+                 y = V2, 
+                 fill = antigenic_group), 
+             shape = 21, 
+             size = 6, 
+             color = "black") +
+  
+  scale_fill_manual(values = colors_for_AG) +
+  scale_color_manual(values = colors_for_SR) +
+  theme_minimal() +
+  labs(title = paste0("Antigenic map of ", 
+                         table_info |> 
+                           pull(virus_type),
+                      " variants"),
+       subtitle = paste0("Inhibition titers for ",
+                       table_info |> 
+                         pull(viral_protein),
+                       " analyzed via ", 
+                       table_info |> 
+                         pull(assay_type)),
+       x = "", 
+       y = "",
+       fill = "Antigenic group",
+       color = "Serum group",
+       caption = "Wilks et al., 2023") +
+  guides(fill = guide_legend(override.aes = list(size = 5)),
+         shape = "none",
+         size = "none") + 
+  theme(
+    axis.text.x = element_blank(), 
+    axis.text.y = element_blank(),
+    plot.background = element_blank(), 
+    panel.background = element_rect(fill = "white"), 
+    panel.grid.minor = element_blank(),
+    plot.caption = element_text(hjust = 1, 
+                                vjust = 1, 
+                                margin = margin(t = 1, 
+                                                unit = "pt"), 
+                                size = 12, 
+                                color = "darkgrey",
+                                face = "italic"),
+    panel.border = element_rect(colour = "azure4", 
+                                fill=NA, 
+                                size=1.5),
+    plot.margin = margin(t = 20, 
+                         r = 20, 
+                         b = 5, 
+                         l = 10, 
                          unit = "pt"),
     plot.subtitle = element_text(margin = margin(t = 2,
                                                  b = 10, 
@@ -412,12 +419,11 @@ ggplot(dd) +
     plot.caption.position = "plot",
     plot.title.position = "plot",
     legend.position = "none",
-    legend.spacing.y = unit(-7, "pt")
     )
 
 ```
 
-Saving the relevant values
+Saving the relevant plots
 
 ```{r}
 ############################
@@ -452,7 +458,15 @@ ggsave(
   height = 12,
   units = "cm",
 )
-
+ggsave(
+  plot = ag_map_2,
+  filename = paste0(base_filename,"_plain", ".svg"),
+  path = folder_name,
+  device = "svg",
+  width = 20,
+  height = 12,
+  units = "cm",
+)
 # Save the plot as TIFF
 ggsave(
   plot = ag_map_1,
@@ -468,6 +482,16 @@ ggsave(
 ggsave(
   plot = ag_map_2,
   filename = paste0(base_filename,"_label", ".tiff"),
+  path = folder_name,
+  device = "tiff",
+  dpi = 300, # Set the desired resolution
+  width = 20,
+  height = 12,
+  units = "cm",
+)
+ggsave(
+  plot = ag_map_2,
+  filename = paste0(base_filename,"_plain", ".tiff"),
   path = folder_name,
   device = "tiff",
   dpi = 300, # Set the desired resolution
