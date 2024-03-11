@@ -18,6 +18,7 @@ library("dplyr")
 library("Racmacs")
 library("svglite")
 library("viridis")
+library("ggrepel")
 ```
 
 ## Load data
@@ -349,7 +350,7 @@ ggplot(dd) +
              size = 6, 
              color = "black") +
   
-  geom_text_repel(aes(x = V1, 
+  geom_label_repel(aes(x = V1, 
                        y = V2, 
                        label = antigenic_group),
                   size = 3,
@@ -358,7 +359,8 @@ ggplot(dd) +
                   segment.linetype = 1,
                   min.segment.length = 0.7,
                   arrow = arrow(length = unit(0.015, "npc")),
-                  segment.alpha = 0.7) +
+                  segment.alpha = 0.7
+                  ) +
   
   scale_fill_manual(values = colors_for_AG) +
   scale_color_manual(values = colors_for_SR) +
