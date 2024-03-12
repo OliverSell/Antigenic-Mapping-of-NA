@@ -42,4 +42,9 @@ print(2+2)
 ```{r}
 
 
+view(
+  map_legend,
+  show_group_legend = FALSE
+)
+
 ```

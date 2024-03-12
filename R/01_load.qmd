@@ -63,6 +63,6 @@ titer_table <- read_csv(file = "../_raw/excel_csv.csv.gz")
 
 ## Writing titer file
 write_tsv(titer_table,
-            file = "../data/titer_table.tsv.gz")
+            file = "../data/titer_dirty.tsv.gz")
 
 ```

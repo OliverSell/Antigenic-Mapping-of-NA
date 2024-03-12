@@ -18,12 +18,60 @@ source("../R/99_proj_func.R")
 #| echo: true
 
 library("tidyverse")
+library("Racmacs")
 ```
 
 ### Loading
 
+```{r}
+
+titer_clean <- read_tsv(file = "../data/titer_clean.tsv.gz")
+attr_table <- read_tsv(file = "../data/attr_table.tsv.gz")
+titer_clean <- read_tsv(file = "../data/titer_clean.tsv.gz")
+
+```
+
 
 ### Augment
 
+```{r}
+############################
+#   Creating map object    #
+############################
+set.seed(696969)
 
-### write tsv
+options(RacOptimizer.num_cores = 1)
+
+map <- acmap(
+  titer_table = titer_clean
+)
+# Perform optimization runs on the map object to try and determine a best map
+
+map <- optimizeMap(
+  map                     = covid_map,
+  number_of_dimensions    = 2,
+  number_of_optimizations = 10000,
+  minimum_column_basis    = "none"
+)
+
+```
+
+
+### map file
+
+```{r}
+
+# Define the path to the 'results' directory relative to the 'R' directory
+results_directory <- file.path(getwd(), "../data")
+
+# Specify the filename directly instead of using tempfile
+# Replace 'my_custom_filename' with your desired filename
+custom_filename <- "map.ace"  # Change 'my_custom_filename' to whatever you want
+file_path <- file.path("../data", custom_filename)
+
+# Use the specified path to save the .ace file
+save.acmap(
+  map,
+  file_path)
+
+```

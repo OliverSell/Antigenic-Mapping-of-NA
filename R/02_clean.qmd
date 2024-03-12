@@ -16,9 +16,6 @@ source("../R/99_proj_func.R")
 library("tidyverse")
 library("dplyr")
 library("Racmacs")
-library("svglite")
-library("viridis")
-library("ggrepel")
 ```
 
 ## Load data
@@ -26,7 +23,7 @@ library("ggrepel")
 ```{r}
 #| message: false
 #| warning: false
-titer_table_covid <- read_tsv("../data/titer_table.tsv.gz")
+titer_table <- read_tsv("../data/titer_dirty.tsv.gz")
 ```
 
 ## Data wrangling
@@ -36,7 +33,7 @@ titer_table_covid <- read_tsv("../data/titer_table.tsv.gz")
 ########################
 #### Titer Cleaning ####
 ########################
-titer_dirty <- titer_table_covid |>
+titer_dirty <- titer_table |>
   # Remove first with meta data.
   slice(-(1:8)) |>
   # Remove coloumns that have no data. 
@@ -93,11 +90,30 @@ table_info <- tibble(
   virus_type = as.character(titer_table_covid[2, 7]),
   species = as.character(titer_table_covid[2, 9]),
   viral_protein = as.character(titer_table_covid[4, 7]),
-  assay_type = as.character(titer_table_covid[4, 9])
+  assay_type = as.character(titer_table_covid[4, 9]),
+  antigen_sera_n = antigen_sera_n,
+  virus_strains_n = virus_strains_n
 )
 
 
 ```
+
+## Writing files 
+
+```{r}
+
+write_tsv(table_info,
+            file = "../data/table_info.tsv.gz")
+
+write_tsv(attr_table,
+            file = "../data/attr_table.tsv.gz")
+
+write_tsv(titer_clean,
+            file = "../data/titer_clean.tsv.gz")
+
+
+```
+
 
 ## Antigenic mapping
 
@@ -109,13 +125,13 @@ set.seed(696969)
 
 options(RacOptimizer.num_cores = 1)
 
-covid_map <- acmap(
+map <- acmap(
   titer_table = titer_clean
 )
 # Perform optimization runs on the map object to try and determine a best map
 
-covid_map <- optimizeMap(
-  map                     = covid_map,
+map <- optimizeMap(
+  map                     = map,
   number_of_dimensions    = 2,
   number_of_optimizations = 10000,
   minimum_column_basis    = "none"
@@ -124,8 +140,8 @@ covid_map <- optimizeMap(
 ############################
 # Extract map coordinates  #
 ############################
-ag_coords <- agCoords(covid_map)  # Antigen coordinates
-sr_coords <- srCoords(covid_map)  # Serum coordinates
+ag_coords <- agCoords(map)  # Antigen coordinates
+sr_coords <- srCoords(map)  # Serum coordinates
 
 ############################
 # Combine ag and sr data   #
