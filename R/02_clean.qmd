@@ -223,7 +223,7 @@ ag_map_1 <- ggplot(dd) +
     axis.text.x = element_blank(), 
     axis.text.y = element_blank(),
     plot.background = element_blank(), 
-    panel.background = element_rect(fill = "#E0FFFF50"), # Lightcyan 50% opacity
+    panel.background = element_rect(fill = "white"), 
     panel.grid.minor = element_blank(),
     panel.border = element_rect(colour = "azure4", 
                                 fill=NA, 
@@ -319,7 +319,7 @@ ag_map_2 <- ggplot(dd) +
     axis.text.x = element_blank(), 
     axis.text.y = element_blank(),
     plot.background = element_blank(), 
-    panel.background = element_rect(fill = "#E0FFFF50"), # Lightcyan 50% opacity
+    panel.background = element_rect(fill = "white"), # Lightcyan 50% opacity
     panel.grid.minor = element_blank(),
     plot.caption = element_text(hjust = 1, 
                                 vjust = 1, 
