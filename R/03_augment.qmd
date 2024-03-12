@@ -26,8 +26,6 @@ library("Racmacs")
 ```{r}
 
 titer_clean <- read_tsv(file = "../data/titer_clean.tsv.gz")
-attr_table <- read_tsv(file = "../data/attr_table.tsv.gz")
-titer_clean <- read_tsv(file = "../data/titer_clean.tsv.gz")
 
 ```
 
@@ -48,7 +46,7 @@ map <- acmap(
 # Perform optimization runs on the map object to try and determine a best map
 
 map <- optimizeMap(
-  map                     = covid_map,
+  map,
   number_of_dimensions    = 2,
   number_of_optimizations = 10000,
   minimum_column_basis    = "none"
