@@ -25,7 +25,7 @@ library("Racmacs")
 
 ```{r}
 
-titer_clean <- read_tsv(file = "../data/titer_clean.tsv.gz")
+titer_clean <- read_tsv(file = "../data/titer_clean.tsv")
 
 ```
 
