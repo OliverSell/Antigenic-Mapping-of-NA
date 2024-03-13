@@ -57,7 +57,10 @@ sr_coords <- srCoords(map)  # Serum coordinates
 ############################
 ag_df <- as.data.frame(ag_coords) |>
   mutate(antigen = rownames(ag_coords),
-         type = 'AG')
+         type = 'AG',
+         color = colors_for_AG[antigen],
+         antigenic_group = attr_table_ag[["Antigenic group"]]) |>
+  rename("antigenic_group" = names(ag_df)[ncol(ag_df)])
 
 sr_df <- as.data.frame(sr_coords) |>
   mutate(serum = rownames(sr_coords),
@@ -86,13 +89,30 @@ colors_for_AG <- sapply(
   adjustcolor, 
   alpha.f = 0.8)
 
-#unique_SR <- dd |> filter(type == "SR") |> pull(serum_group) |> unique()
-colors_for_SR <- c("blue","red")#<- BASE ON Antigen
-# Base on the linked antigen
-# Base on the linked antigen
-# Base on the linked antigen
-# Base on the linked antigen
-# Base on the linked antigen
+
+unique_antigenic_groups <- unique(dd$antigenic_group)
+# Find antigenic groups not already in colors_for_AG
+new_groups <- unique_antigenic_groups[!unique_antigenic_groups %in% names(colors_for_AG)]
+
+# If there are new groups, generate colors for them
+if(length(new_groups) > 0) {
+  new_colors <- viridis::viridis(length(new_groups),option = "turbo")
+  # Add these new colors to the existing colors_for_AG
+  colors_for_AG <- c(colors_for_AG, setNames(new_colors, new_groups))
+}
+
+
+unique_serum_exposures <- unique(attr_table_sr$"Serum exposure")
+# ag_df and antigenic_group to color
+antigenic_group_colors <- ag_df |>
+  select(antigenic_group, 
+         color) |>
+  distinct() |>
+  # Ensure there's a row for each antigenic group mentioned in attr_table_sr
+  filter(antigenic_group %in% unique_serum_exposures)
+
+colors_for_SR <- setNames(antigenic_group_colors$color, 
+                          antigenic_group_colors$antigenic_group)
 
 ```
 
@@ -102,45 +122,17 @@ Antigenic Mapping
 # Generating Antigenic Map #
 ############################
 base_map <- ggplot(dd) +
-  geom_point(data = filter(dd, 
-                           type == "SR"), 
-             aes(x = V1, 
-                 y = V2, 
-                 shape = type, 
-                 color = serum_group), 
-             size = 2, 
-             shape = 0, 
-             stroke = 0.75) +
-  geom_point(data = filter(dd, 
-                           type == "AG"), 
-             aes(x = V1, 
-                 y = V2, 
-                 fill = antigen), 
-             shape = 21, 
-             size = 6, 
-             color = "black") +
-  
+  geom_point(data = filter(dd, type == "SR"), 
+             aes(x = V1, y = V2, shape = type, color = serum_group), 
+             size = 2, shape = 0, stroke = 0.4, alpha = 0.7) +
   scale_fill_manual(values = colors_for_AG) +
-  
   scale_color_manual(values = colors_for_SR) +
-  
   theme_minimal() +
-  
-  labs(title = paste0("Antigenic map of ", 
-                      table_info |> 
-                        pull(virus_type), 
-                      " variants"),
-       subtitle = paste0("Inhibition titers for ", 
-                         table_info |> 
-                           pull(viral_protein), 
-                         " analyzed via ", 
-                         table_info |> 
-                           pull(assay_type)),
-       x = "", y = "", 
-       fill = "Antigen", 
-       color = "Serum group",
+  labs(title = paste0("Antigenic map of ", table_info %>% pull(virus_type), " variants"),
+       subtitle = paste0("Inhibition titers for ", table_info %>% pull(viral_protein), 
+                         " analyzed via ", table_info %>% pull(assay_type)),
+       x = "", y = "", fill = "Antigen", color = "Serum group",
        caption = "Wilks et al., 2023") +
-  
   theme(axis.text.x = element_blank(), 
         axis.text.y = element_blank(),
         plot.background = element_blank(), 
@@ -181,8 +173,16 @@ base_map <- ggplot(dd) +
 # Legend #
 ##########
 ag_map_1 <- base_map +
-  guides(fill = guide_legend(override.aes = list(size = 5)), shape = "none", size = "none")
+  geom_point(data = filter(dd, type == "AG"), 
+             aes(x = V1, y = V2, fill = antigen), 
+             shape = 21, size = 6, color = "black") +
+  guides(fill = guide_legend(override.aes = list(size = 5)), 
+         shape = "none", size = "none",
+         color = guide_legend(override.aes = list(size = 3, stroke = 0.8)))
+
 ```
+
+
 
 Label plot
 
@@ -191,7 +191,9 @@ Label plot
 # Labels #
 ##########
 ag_map_2 <- base_map +
-  
+  geom_point(data = filter(dd, type == "AG"), 
+             aes(x = V1, y = V2, fill = antigen), 
+             shape = 21, size = 6, color = "black") +
   coord_cartesian(clip = "off") +
   
   geom_text_repel(aes(x = V1, 
@@ -215,7 +217,7 @@ ag_map_2 <- base_map +
                   bg.r = 0.10) +
   
   guides(fill = FALSE, 
-         color = guide_legend(override.aes = list(size = 2)))
+         color = guide_legend(override.aes = list(size = 3, stroke = 0.8)))
 ```
 
 ## Plain plot
@@ -225,11 +227,72 @@ ag_map_2 <- base_map +
 # Plain  #
 ##########
 ag_map_3 <- base_map +
+  geom_point(data = filter(dd, type == "AG"), 
+             aes(x = V1, y = V2, fill = antigen), 
+             shape = 21, size = 6, color = "black") +
+  guides(fill = guide_legend(override.aes = list(size = 5)), shape = "none", size = "none",
+         color = guide_legend(override.aes = list(size = 3, stroke = 0.8))) +
+  theme(legend.position = "none")
+```
+
+```{r}
+##########
+# Cluster#
+##########
+ag_map_4 <- base_map + 
+  geom_point(data = filter(dd, type == "AG"), 
+             aes(x = V1, y = V2, fill = antigenic_group), 
+             shape = 21, size = 6, color = "black") +
+  guides(fill = guide_legend(override.aes = list(size = 5)), shape = "none", size = "none",
+         color = guide_legend(override.aes = list(size = 3, stroke = 0.8)))
+
+```
+
+```{r}
+##########
+# Grouped#
+##########
+ag_counts <- dd %>%
+  filter(type == "AG") %>%
+  count(antigenic_group)
+
+# Filter for antigenic_groups appearing more than once
+ag_groups_with_multiple_entries <- ag_counts %>%
+  filter(n > 1) %>%
+  pull(antigenic_group)
+
+# Create a subset of dd for these groups
+dd_multiple_entries <- dd %>%
+  filter(antigenic_group %in% ag_groups_with_multiple_entries)
+
+ag_map_5 <- base_map +
+  geom_point(data = filter(dd, type == "AG"), 
+             aes(x = V1, y = V2, fill = antigenic_group), 
+             shape = 21, size = 6, color = "black") +
+  coord_cartesian(clip = "off") +
+  
+  geom_text_repel(data = dd_multiple_entries,
+                  aes(x = V1, 
+                      y = V2, 
+                      label = antigen),
+                  size = 3, 
+                  box.padding = unit(0.35, "lines"), 
+                  point.padding = unit(0.8, "lines"),
+                  segment.linetype = 1, 
+                  min.segment.length = 0.4, 
+                  arrow = arrow(length = unit(0.015, "npc")),
+                  segment.curvature = 0, 
+                  segment.alpha = 0.7, 
+                  force_pull = 1.0, 
+                  force = 1.0, 
+                  max.iter = 10000,
+                  xlim = c(-NA, NA), 
+                  ylim = c(-NA, NA), 
+                  bg.color = "white", 
+                  bg.r = 0.10) +
   
   guides(fill = guide_legend(override.aes = list(size = 5)), 
-         shape = "none", 
-         size = "none") +
-  theme(legend.position = "none")
+         color = guide_legend(override.aes = list(size = 3, stroke = 0.8)))
 ```
 
 Saving the relevant plots
@@ -274,8 +337,26 @@ ggsave(
   units = "cm",
 )
 ggsave(
-  plot = ag_map_2,
+  plot = ag_map_3,
   filename = paste0(base_filename,"_plain", ".svg"),
+  path = folder_name,
+  device = "svg",
+  width = 20,
+  height = 12,
+  units = "cm",
+)
+ggsave(
+  plot = ag_map_4,
+  filename = paste0(base_filename,"_grouped", ".svg"),
+  path = folder_name,
+  device = "svg",
+  width = 20,
+  height = 12,
+  units = "cm",
+)
+ggsave(
+  plot = ag_map_5,
+  filename = paste0(base_filename,"_grouped_label", ".svg"),
   path = folder_name,
   device = "svg",
   width = 20,
@@ -305,8 +386,28 @@ ggsave(
   units = "cm",
 )
 ggsave(
-  plot = ag_map_2,
+  plot = ag_map_3,
   filename = paste0(base_filename,"_plain", ".tiff"),
+  path = folder_name,
+  device = "tiff",
+  dpi = 300, # Set the desired resolution
+  width = 20,
+  height = 12,
+  units = "cm",
+)
+ggsave(
+  plot = ag_map_4,
+  filename = paste0(base_filename,"_grouped", ".tiff"),
+  path = folder_name,
+  device = "tiff",
+  dpi = 300, # Set the desired resolution
+  width = 20,
+  height = 12,
+  units = "cm",
+)
+ggsave(
+  plot = ag_map_5,
+  filename = paste0(base_filename,"_grouped_label", ".tiff"),
   path = folder_name,
   device = "tiff",
   dpi = 300, # Set the desired resolution
