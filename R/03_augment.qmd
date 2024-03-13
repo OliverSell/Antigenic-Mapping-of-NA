@@ -26,6 +26,7 @@ library("Racmacs")
 ```{r}
 
 titer_clean <- read_tsv(file = "../data/titer_clean.tsv")
+row.names(titer_clean) <- ag_names
 
 ```
 
