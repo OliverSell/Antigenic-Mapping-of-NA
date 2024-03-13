@@ -49,7 +49,7 @@ titer_dirty <- titer_table |>
   as.data.frame()
 
 #Fetches the names of the sera
-sera_names <- titer_table_covid |>
+sera_names <- titer_table |>
   slice(-(1:8)) |>
   dplyr::select(where(~ any(!is.na(.)))) |> 
   head(1) |> 
