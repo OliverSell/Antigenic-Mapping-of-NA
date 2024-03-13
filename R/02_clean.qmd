@@ -74,7 +74,7 @@ virus_strains_n <- nrow(titer_clean)
 #######################
 ### Attribute Table ###
 #######################
-attr_table <- titer_table_covid |>
+attr_table <- titer_table |>
   slice(-(1:7)) |> 
   slice_head(n = 2) |> 
   t() |> 
@@ -87,10 +87,10 @@ attr_table <- titer_table_covid |>
 
 ## Table information
 table_info <- tibble(
-  virus_type = as.character(titer_table_covid[2, 7]),
-  species = as.character(titer_table_covid[2, 9]),
-  viral_protein = as.character(titer_table_covid[4, 7]),
-  assay_type = as.character(titer_table_covid[4, 9]),
+  virus_type = as.character(titer_table[2, 7]),
+  species = as.character(titer_table[2, 9]),
+  viral_protein = as.character(titer_table[4, 7]),
+  assay_type = as.character(titer_table[4, 9]),
   antigen_sera_n = antigen_sera_n,
   virus_strains_n = virus_strains_n
 )

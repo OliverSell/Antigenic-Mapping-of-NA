@@ -16,6 +16,7 @@ source("../R/99_proj_func.R")
 ```{r}
 #| eval: true
 #| echo: true
+#| warning: false
 
 library("tidyverse")
 library("Racmacs")
@@ -86,17 +87,13 @@ colors_for_AG <- sapply(
   alpha.f = 0.8)
 
 #unique_SR <- dd |> filter(type == "SR") |> pull(serum_group) |> unique()
-colors_for_SR <- c(
-  rgb(34/255, 10/255, 131/255, 0.9),# blue
-  rgb(142/255, 0/255, 10/255, 0.9), # red
-  rgb(16/255, 121/255, 0/255, 0.9), # green
-  rgb(146/255, 119/255, 0/255, 1.0),# yellow
-  ## tetrad colors ##
-  rgb(107/255, 2/255, 125/255, 0.9),# purple
-  rgb(146/255, 78/255, 0/255, 0.9), # orange/brown
-  rgb(4/255, 82/255, 120/255, 0.9), # aquatic blue
-  rgb(126/255, 142/255, 0/255, 1.0)# lime green
-)
+colors_for_SR #<- BASE ON Antigen
+# Base on the linked antigen
+# Base on the linked antigen
+# Base on the linked antigen
+# Base on the linked antigen
+# Base on the linked antigen
+
 ```
 
 Legend plot
@@ -369,6 +366,12 @@ folder_name <- paste0("../results/antigenic_map_",
                       table_info |>
                           pull(virus_type) , 
                       "_", Sys.Date())
+# Add version_1
+# Add version_2
+# Add version_3
+# Add version_4
+# Add version_5
+
 make_dir(folder_name)
 
 base_filename <- paste0("antigenic_map_", 
