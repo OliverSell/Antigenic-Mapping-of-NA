@@ -34,7 +34,7 @@ make_dir("../data")
 ## SPØRG MARTHA
 ## SPØRG MARTHA
 ## SPØRG MARTHA
-excel_data <- read_excel("../_raw/antigenic_map_template_covid.xlsx")  ## AUTOMATE
+excel_data <- read_excel("../_raw/antigenic_map_template.xlsx")  ## AUTOMATE
 ## SPØRG MARTHA
 ## SPØRG MARTHA
 ## SPØRG MARTHA
