@@ -87,7 +87,7 @@ colors_for_AG <- sapply(
   alpha.f = 0.8)
 
 #unique_SR <- dd |> filter(type == "SR") |> pull(serum_group) |> unique()
-colors_for_SR #<- BASE ON Antigen
+colors_for_SR <- c("blue","red")#<- BASE ON Antigen
 # Base on the linked antigen
 # Base on the linked antigen
 # Base on the linked antigen
@@ -96,7 +96,7 @@ colors_for_SR #<- BASE ON Antigen
 
 ```
 
-Legend plot
+Antigenic Mapping
 ```{r}
 ############################
 # Generating Antigenic Map #
