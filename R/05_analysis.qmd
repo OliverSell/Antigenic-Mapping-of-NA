@@ -66,9 +66,13 @@ sr_df <- as.data.frame(sr_coords) |>
   mutate(serum = rownames(sr_coords),
          type = 'SR')
 
-dd <- bind_rows(ag_df, sr_df)
+dd <- bind_rows(ag_df, 
+                sr_df)
 
-dd <- dd |> mutate(serum_group = attr_table$"Serum exposure"[match(dd$serum, attr_table$"Serum IDs")])
+dd <- dd |> mutate(
+  serum_group = attr_table$"Serum exposure"[match(dd$serum, 
+                                                  attr_table$"Serum IDs")]
+  )
 
 ############################
 #     Unique colouring     #
@@ -128,9 +132,9 @@ base_map <- ggplot(dd) +
   scale_fill_manual(values = colors_for_AG) +
   scale_color_manual(values = colors_for_SR) +
   theme_minimal() +
-  labs(title = paste0("Antigenic map of ", table_info %>% pull(virus_type), " variants"),
-       subtitle = paste0("Inhibition titers for ", table_info %>% pull(viral_protein), 
-                         " analyzed via ", table_info %>% pull(assay_type)),
+  labs(title = paste0("Antigenic map of ", table_info |> pull(virus_type), " variants"),
+       subtitle = paste0("Inhibition titers for ", table_info |> pull(viral_protein), 
+                         " analyzed via ", table_info |> pull(assay_type)),
        x = "", y = "", fill = "Antigen", color = "Serum group",
        caption = "Wilks et al., 2023") +
   theme(axis.text.x = element_blank(), 
@@ -252,17 +256,17 @@ ag_map_4 <- base_map +
 ##########
 # Grouped#
 ##########
-ag_counts <- dd %>%
-  filter(type == "AG") %>%
+ag_counts <- dd |>
+  filter(type == "AG") |>
   count(antigenic_group)
 
 # Filter for antigenic_groups appearing more than once
-ag_groups_with_multiple_entries <- ag_counts %>%
-  filter(n > 1) %>%
+ag_groups_with_multiple_entries <- ag_counts |>
+  filter(n > 1) |>
   pull(antigenic_group)
 
 # Create a subset of dd for these groups
-dd_multiple_entries <- dd %>%
+dd_multiple_entries <- dd |>
   filter(antigenic_group %in% ag_groups_with_multiple_entries)
 
 ag_map_5 <- base_map +
