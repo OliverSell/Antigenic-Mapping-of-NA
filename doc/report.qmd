@@ -17,33 +17,85 @@ format:
 
 ## Mapping
 
+
+```{r setup, include=FALSE}
+library("fs")
+library("knitr")
+
+# Base path and initial folder name components
+base_path <- "../results"
+folder_prefix <- "antigenic_map_influenza A_"
+today_date <- format(Sys.Date(), "%Y-%m-%d")
+
+# Function to get the highest version folder
+get_latest_version_folder <- function(base_path, folder_prefix, date) {
+  potential_folders <- c(paste0(folder_prefix, date), paste0(folder_prefix, date, "_v", 1:100))
+  existing_folders <- potential_folders[dir.exists(file.path(base_path, potential_folders))]
+  
+  if (length(existing_folders) > 0) {
+    selected_folder <- existing_folders[which.max(nchar(existing_folders))]
+    return(file.path(base_path, selected_folder))
+  } else {
+    stop("No matching folders found.")
+  }
+}
+
+# Determine the latest version folder for today's date
+latest_folder_path <- get_latest_version_folder(base_path, folder_prefix, today_date)
+
+```
+
 ### Antigenic map - colored by type - with legend
 
 ```{r}
-ag_map_1
+# Include graphic for antigenic map colored by type - with legend
+file_path_type_legend <- file.path(latest_folder_path, paste0("antigenic_map_Influenza A_", today_date, ".jpg"))
+knitr::include_graphics(file_path_type_legend)
+
 ```
 
 ### Antigenic map - colored by type - with labels
 
 ```{r}
-ag_map_2
+# Include graphic for antigenic map colored by type - with labels
+file_path_type_labels <- file.path(latest_folder_path, paste0("antigenic_map_Influenza A_", today_date, "_label.jpg"))
+knitr::include_graphics(file_path_type_labels)
+
 ```
 
-### Antigenic map - colored by antigenic group - with legend 
+### Antigenic map - colored by antigenic group - with legend
 
 ```{r}
-ag_map_4
+# Include graphic for antigenic map colored by antigenic group - with legend
+file_path_group_legend <- file.path(latest_folder_path, paste0("antigenic_map_Influenza A_", today_date, "_grouped.jpg"))
+knitr::include_graphics(file_path_group_legend)
+
 ```
 
 ### Antigenic map - colored by antigenic group - with labels
 
 ```{r}
-ag_map_5
+# Include graphic for antigenic map colored by antigenic group - with labels
+file_path_group_labels <- file.path(latest_folder_path, paste0("antigenic_map_Influenza A_", today_date, "_grouped_label.jpg"))
+knitr::include_graphics(file_path_group_labels)
+
 ```
 
 ### Antigenic map blank
 
-```{r}  ag_map_3}
+```{r}
+# Include graphic for blank antigenic map
+file_path_blank <- file.path(latest_folder_path, paste0("antigenic_map_Influenza A_", today_date, "_plain.jpg"))
+knitr::include_graphics(file_path_blank)
+
+```
+
+### Antigenic map with clustering
+
+```{r}
+# Include graphic for antigenic map with clustering
+file_path_cluster <- file.path(latest_folder_path, paste0("antigenic_map_Influenza A_", today_date, "_cluster.jpg"))
+knitr::include_graphics(file_path_cluster)
 ```
 
 ## Comments
