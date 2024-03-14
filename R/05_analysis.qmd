@@ -382,6 +382,16 @@ base_filename <- paste0("antigenic_map_",
                         "_", Sys.Date())
 
 ggsave(
+  plot = ag_map_5,
+  filename = paste0(base_filename,"_einstein", ".jpg"),
+  path = folder_name,
+  device = "jpg",
+  width = 20,
+  height = 12,
+  units = "cm",
+)
+
+ggsave(
   plot = ag_map_1,
   filename = paste0(base_filename, ".svg"),
   path = folder_name,
