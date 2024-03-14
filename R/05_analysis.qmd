@@ -165,7 +165,7 @@ base_map <- ggplot(dd) +
   labs(title = paste0("Antigenic map of ", table_info |> pull(virus_type), " variants"),
        subtitle = paste0("Inhibition titers for ", table_info |> pull(viral_protein), 
                          " analyzed via ", table_info |> pull(assay_type)),
-       x = "", y = "", fill = "Antigen", color = "Serum group",
+       x = "", y = "", color = "Serum group",
        caption = "Wilks et al., 2023") +
   theme(axis.text.x = element_blank(), 
         axis.text.y = element_blank(),
@@ -210,9 +210,11 @@ ag_map_1 <- base_map +
   geom_point(data = filter(dd, type == "AG"), 
              aes(x = V1, y = V2, fill = antigen), 
              shape = 21, size = 6, color = "black") +
+  labs(fill = "Antigen") + 
   guides(fill = guide_legend(override.aes = list(size = 5)), 
          shape = "none", size = "none",
          color = guide_legend(override.aes = list(size = 3, stroke = 0.8)))
+  
 
 ```
 
@@ -249,7 +251,7 @@ ag_map_2 <- base_map +
                   ylim = c(-NA, NA), 
                   bg.color = "white", 
                   bg.r = 0.10) +
-  
+  labs(fill = "Antigen") + 
   guides(fill = FALSE, 
          color = guide_legend(override.aes = list(size = 3, stroke = 0.8)))
 ```
@@ -264,6 +266,7 @@ ag_map_3 <- base_map +
   geom_point(data = filter(dd, type == "AG"), 
              aes(x = V1, y = V2, fill = antigen), 
              shape = 21, size = 6, color = "black") +
+  labs(fill = "Antigen") + 
   guides(fill = guide_legend(override.aes = list(size = 5)), shape = "none", size = "none",
          color = guide_legend(override.aes = list(size = 3, stroke = 0.8))) +
   theme(legend.position = "none")
@@ -277,6 +280,7 @@ ag_map_4 <- base_map +
   geom_point(data = filter(dd, type == "AG"), 
              aes(x = V1, y = V2, fill = antigenic_group), 
              shape = 21, size = 6, color = "black") +
+  labs(fill = "Antigenic group") + 
   guides(fill = guide_legend(override.aes = list(size = 5)), shape = "none", size = "none",
          color = guide_legend(override.aes = list(size = 3, stroke = 0.8)))
 
@@ -292,6 +296,10 @@ ag_groups_with_multiple_entries <- ag_counts |>
 # Create a subset of dd for these groups
 dd_multiple_entries <- dd |>
   filter(antigenic_group %in% ag_groups_with_multiple_entries)
+
+dd_cluster <- dd |>
+  filter(type == "AG") |>
+  filter(cluster != 0)
 
 ag_map_5 <- base_map +
   geom_point(data = filter(dd, type == "AG"), 
@@ -318,6 +326,7 @@ ag_map_5 <- base_map +
                   ylim = c(-NA, NA), 
                   bg.color = "white", 
                   bg.r = 0.10) +
+  labs(fill = "Antigenic group") + 
   
   guides(fill = guide_legend(override.aes = list(size = 5)), 
          color = guide_legend(override.aes = list(size = 3, stroke = 0.8)))
@@ -342,12 +351,73 @@ ag_map_6 <- base_map +
     aes(x = V1, y = V2, fill = antigen),  # Fill based on antigenic group
     shape = 21, size = 6, color = "black"
   ) +
+  labs(fill = "Antigen") + 
   guides(fill = guide_legend(override.aes = list(size = 5)), 
          color = guide_legend(override.aes = list(size = 2))) +
   scale_color_manual(values = combined_colors,
                      breaks = unique_serum_exposures, # Specify which legends to display
                      labels = unique_serum_exposures)
 
+ag_map_7 <- base_map + 
+  geom_mark_ellipse(
+    data = filter(dd, cluster > 0),  
+    aes(x = V1, y = V2, group = factor(cluster), color = factor(cluster)),
+    fill = NA,  # No fill for ellipses
+    expand = unit(0.05, 'npc'), alpha = 1.0, size = 1.0, linetype = 3,
+    show.legend = FALSE
+  ) +
+  geom_point(
+    data = filter(dd, type == "AG"), 
+    aes(x = V1, y = V2, fill = antigenic_group),  # Fill based on antigenic group
+    shape = 21, size = 6, color = "black"
+  ) +
+  labs(fill = "Antigenic group") + 
+  guides(fill = guide_legend(override.aes = list(size = 5)), 
+         color = guide_legend(override.aes = list(size = 2))) +
+  scale_color_manual(values = combined_colors,
+                     breaks = unique_serum_exposures, # Specify which legends to display
+                     labels = unique_serum_exposures)
+
+
+ag_map_8 <- base_map + 
+  geom_mark_ellipse(
+    data = filter(dd, cluster > 0),  
+    aes(x = V1, y = V2, group = factor(cluster), color = factor(cluster)),
+    fill = NA,  # No fill for ellipses
+    expand = unit(0.05, 'npc'), alpha = 1.0, size = 1.0, linetype = 3,
+    show.legend = FALSE
+  ) +
+  geom_point(
+    data = filter(dd, type == "AG"), 
+    aes(x = V1, y = V2, fill = antigenic_group),  # Fill based on antigenic group
+    shape = 21, size = 6, color = "black"
+  ) +
+  coord_cartesian(clip = "on") +
+  geom_text_repel(data = dd_cluster,
+                  aes(x = V1, 
+                      y = V2, 
+                      label = antigen),
+                  size = 3, 
+                  box.padding = unit(0.35, "lines"), 
+                  point.padding = unit(0.8, "lines"),
+                  segment.linetype = 1, 
+                  min.segment.length = 0.4, 
+                  arrow = arrow(length = unit(0.015, "npc")),
+                  segment.curvature = 0, 
+                  segment.alpha = 0.7, 
+                  force_pull = 1.0, 
+                  force = 1.0, 
+                  max.iter = 10000,
+                  xlim = c(-NA, NA), 
+                  ylim = c(-NA, NA), 
+                  bg.color = "white", 
+                  bg.r = 0.10) +
+  labs(fill = "Antigenic group") + 
+  guides(fill = guide_legend(override.aes = list(size = 5)), 
+         color = guide_legend(override.aes = list(size = 2))) +
+  scale_color_manual(values = combined_colors,
+                     breaks = unique_serum_exposures, # Specify which legends to display
+                     labels = unique_serum_exposures) 
 
 
 ```
@@ -450,6 +520,15 @@ ggsave(
   height = 12,
   units = "cm",
 )
+ggsave(
+  plot = ag_map_7,
+  filename = paste0(base_filename,"_grouped_cluster", ".jpg"),
+  path = folder_name,
+  device = "jpg",
+  width = 20,
+  height = 12,
+  units = "cm",
+)
 ## SVG
 ggsave(
   plot = ag_map_1,
@@ -499,6 +578,15 @@ ggsave(
 ggsave(
   plot = ag_map_6,
   filename = paste0(base_filename,"_cluster", ".svg"),
+  path = folder_name,
+  device = "svg",
+  width = 20,
+  height = 12,
+  units = "cm",
+)
+ggsave(
+  plot = ag_map_7,
+  filename = paste0(base_filename,"_grouped_cluster", ".svg"),
   path = folder_name,
   device = "svg",
   width = 20,
@@ -560,6 +648,16 @@ ggsave(
 ggsave(
   plot = ag_map_6,
   filename = paste0(base_filename,"_cluster", ".tiff"),
+  path = folder_name,
+  device = "tiff",
+  dpi = 300,
+  width = 20,
+  height = 12,
+  units = "cm",
+)
+ggsave(
+  plot = ag_map_7,
+  filename = paste0(base_filename,"_grouped_cluster", ".tiff"),
   path = folder_name,
   device = "tiff",
   dpi = 300,
