@@ -38,7 +38,8 @@ map <- read.acmap(
   align_optimizations = FALSE
 )
 
-attr_table <- read_tsv(file = "../data/attr_table.tsv")
+attr_table_ag <- read_tsv(file = "../data/attr_table_ag.tsv")
+attr_table_sr <- read_tsv(file = "../data/attr_table_sr.tsv")
 table_info <- read_tsv(file = "../data/table_info.tsv")
 
 
@@ -58,9 +59,10 @@ sr_coords <- srCoords(map)  # Serum coordinates
 ag_df <- as.data.frame(ag_coords) |>
   mutate(antigen = rownames(ag_coords),
          type = 'AG',
-         color = colors_for_AG[antigen],
-         antigenic_group = attr_table_ag[["Antigenic group"]]) |>
-  rename("antigenic_group" = names(ag_df)[ncol(ag_df)])
+         antigenic_group = attr_table_ag[["Antigenic group"]]) 
+
+ag_df <- ag_df |> rename("antigenic_group" = names(ag_df)[ncol(ag_df)])
+
 
 sr_df <- as.data.frame(sr_coords) |>
   mutate(serum = rownames(sr_coords),
@@ -70,8 +72,8 @@ dd <- bind_rows(ag_df,
                 sr_df)
 
 dd <- dd |> mutate(
-  serum_group = attr_table$"Serum exposure"[match(dd$serum, 
-                                                  attr_table$"Serum IDs")]
+  serum_group = attr_table_sr$"Serum exposure"[match(dd$serum, 
+                                                  attr_table_sr$"Serum IDs")]
   )
 
 ############################
@@ -93,6 +95,8 @@ colors_for_AG <- sapply(
   adjustcolor, 
   alpha.f = 0.8)
 
+dd <- dd |> mutate(color = colors_for_AG[antigen])
+
 
 unique_antigenic_groups <- unique(dd$antigenic_group)
 # Find antigenic groups not already in colors_for_AG
@@ -108,7 +112,8 @@ if(length(new_groups) > 0) {
 
 unique_serum_exposures <- unique(attr_table_sr$"Serum exposure")
 # ag_df and antigenic_group to color
-antigenic_group_colors <- ag_df |>
+antigenic_group_colors <- dd |> 
+  filter(type == "AG") |> 
   select(antigenic_group, 
          color) |>
   distinct() |>

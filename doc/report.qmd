@@ -15,10 +15,37 @@ format:
 
 ## Background information
 
-### Dataset
-
-### Output
-
-## Loading and wrangling
-
 ## Mapping
+
+### Antigenic map - colored by type - with legend
+
+```{r}
+ag_map_1
+```
+
+### Antigenic map - colored by type - with labels
+
+```{r}
+ag_map_2
+```
+
+### Antigenic map - colored by antigenic group - with legend 
+
+```{r}
+ag_map_4
+```
+
+### Antigenic map - colored by antigenic group - with labels
+
+```{r}
+ag_map_5
+```
+
+### Antigenic map blank
+
+```{r}  ag_map_3}
+```
+
+## Comments
+
+## Behind the code
