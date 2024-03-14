@@ -304,6 +304,60 @@ ag_map_5 <- base_map +
          color = guide_legend(override.aes = list(size = 3, stroke = 0.8)))
 ```
 
+```{r}
+library("ggforce")
+
+
+base_map +
+  geom_mark_ellipse(
+    data = dd_multiple_entries,
+    aes(x = V1, y = V2, group = antigenic_group, fill = antigenic_group),
+    expand = unit(0.05, 'npc'),
+    alpha = 0.1
+  ) +
+  geom_point(data = filter(dd, type == "AG"), 
+             aes(x = V1, y = V2, fill = antigenic_group), 
+             shape = 21, size = 6, color = "black") +
+  
+  guides(fill = guide_legend(override.aes = list(size = 5)), 
+         shape = "none", size = "none",
+         color = guide_legend(override.aes = list(size = 3, stroke = 0.8)))
+
+library("dbscan")
+
+clustering_result <- dbscan::dbscan(ag_df[, 
+                                       c("V1", "V2")], 
+                                    eps = 0.5, # the maximum distance between two samples for one to be considered in the neighborhood
+                                    minPts = 2) # number of samples in a neighborhood for a point to be considered a core point
+
+ag_df$cluster <- clustering_result$cluster
+
+
+num_clusters <- max(ag_df$cluster[ag_df$cluster > 0])
+
+cluster_colors <- viridis(num_clusters, option = "mako")
+
+names(cluster_colors) <- as.character(paste0("cluster",seq_len(num_clusters)))
+
+combined_colors <- c(cluster_colors, colors_for_AG)
+
+base_map + 
+  geom_mark_ellipse(
+    data = filter(ag_df, cluster > 0),  #  type == "AG",
+    aes(x = V1, y = V2, group = factor(cluster), color = factor(cluster)),
+    fill = NA, 
+    expand = unit(0.05, 'npc'), alpha = 0.5, size = 1
+  ) +
+  geom_point(data = filter(dd, type == "AG"), 
+             aes(x = V1, y = V2, fill = antigenic_group), 
+             shape = 21, size = 6, color = "black") +
+  scale_fill_manual(values = combined_colors) +
+  guides(fill = guide_legend(override.aes = list(size = 5)), shape = "none", size = "none",
+         color = guide_legend(override.aes = list(size = 2)))
+
+```
+
+
 Saving the relevant plots
 
 ```{r}
