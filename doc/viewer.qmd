@@ -24,6 +24,21 @@ Insert hidden code here
 
 ```{r}
 #| output: false 
+library("Racmacs")
+library("tidyverse")
+
+file_path <- file.path(getwd(), "../data/map.ace")
+
+map <- read.acmap(
+  file_path,
+  optimization_number = 100,
+  sort_optimizations = FALSE,
+  align_optimizations = FALSE
+)
+
+attr_table_ag <- read_tsv(file = "../data/attr_table_ag.tsv")
+attr_table_sr <- read_tsv(file = "../data/attr_table_sr.tsv")
+table_info <- read_tsv(file = "../data/table_info.tsv")
 
 print(2+2)
 ```
