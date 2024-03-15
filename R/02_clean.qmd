@@ -64,7 +64,7 @@ antigen_sera_n <- ncol(titer_clean)
 virus_strains_n <- nrow(titer_clean)
 
 #
-ag_names <- rownames(titer_clean)
+ag_names <- rownames(titer_clean) |> as_data_frame()
 
 #######################
 ### Attribute Table ###
@@ -121,6 +121,8 @@ write_tsv(attr_table_sr,
 write_tsv(titer_clean,
             file = "../data/titer_clean.tsv")
 
+write_tsv(ag_names,
+            file = "../data/ag_names.tsv")
 
 ```
 

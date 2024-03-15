@@ -465,6 +465,9 @@ base_filename <- paste0("antigenic_map_",
                         table_info |>
                           pull(virus_type), 
                         "_", Sys.Date())
+write_tsv(dd,
+            file = "../data/dd.tsv")
+
 ## JPG
 ggsave(
   plot = ag_map_1,
