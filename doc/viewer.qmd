@@ -39,8 +39,10 @@ map <- read.acmap(
 attr_table_ag <- read_tsv(file = "../data/attr_table_ag.tsv")
 attr_table_sr <- read_tsv(file = "../data/attr_table_sr.tsv")
 table_info <- read_tsv(file = "../data/table_info.tsv")
+titer_clean <- read_tsv(file = "../data/titer_clean.tsv")
+dd <- read_tsv(file = "../data/dd.tsv")
+ag_names <- read_tsv(file = "../data/ag_names.tsv")
 
-print(2+2)
 ```
 
 ## Loading code
@@ -48,8 +50,21 @@ print(2+2)
 ```{r}
 #| echo: true
 
+legend_names <- ag_names |> 
+  pull() |> 
+  as.character()
 
-print(2+2)
+colors <- dd |> 
+  select(color) |> 
+  filter(!is.na(color)) |> 
+  pull() |> 
+  as.character()
+
+agFill(map) <- colors
+
+#Trying to create a legend. Dont know what to do with it
+map_legend <- setLegend(map, legend_names, colors, style.bottom = "8px", style.right = "8px")
+
 ```
 
 ## Viewer
@@ -57,9 +72,7 @@ print(2+2)
 ```{r}
 
 
-view(
-  map_legend,
-  show_group_legend = FALSE
-)
+Racmacs::view(
+  map_legend)
 
 ```
