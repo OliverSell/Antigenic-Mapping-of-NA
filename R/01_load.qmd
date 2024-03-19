@@ -44,12 +44,12 @@ make_dir("../data")
 ## SPØRG MARTHA
 ## SPØRG MARTHA
 ## SPØRG MARTHA
-excel_data <- read_excel("../_raw/antigenic_map_template.xlsx")  ## AUTOMATE
+excel_data <- read_excel("../data/_raw/antigenic_map_template.xlsx")  ## AUTOMATE
 ## SPØRG MARTHA
 ## SPØRG MARTHA
 ## SPØRG MARTHA
 
-write_csv(excel_data, "../_raw/excel_csv.csv.gz")
+write_csv(excel_data, "../data/excel_csv.csv.gz")
 ```
 
 
@@ -63,7 +63,7 @@ write_csv(excel_data, "../_raw/excel_csv.csv.gz")
 #titer_table <- read_csv2(file = "../_raw/antigenic_map_template_covid.csv")
 
 ## Loading titer data from generated csv file
-titer_table <- read_csv(file = "../_raw/excel_csv.csv.gz")
+titer_table <- read_csv(file = "../data/_raw/excel_csv.csv.gz")
 
 
 ```
