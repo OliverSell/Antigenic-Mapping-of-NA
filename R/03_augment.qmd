@@ -59,7 +59,9 @@ map <- optimizeMap(
 
 print(mapStress(map))
 
-
+#### UNCERTAINTY
+#### UNCERTAINTY
+#### UNCERTAINTY
 triangulationBlobs(
   map,
   optimization_number = 10,
@@ -95,6 +97,9 @@ bootstrapBlobs(
   method = "ks"
 )
 
+#### UNCERTAINTY
+#### UNCERTAINTY
+#### UNCERTAINTY
 
 ```
 
