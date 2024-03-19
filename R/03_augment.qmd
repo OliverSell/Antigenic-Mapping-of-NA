@@ -25,7 +25,10 @@ library("Racmacs")
 
 ```{r}
 
+ag_names <- read_tsv(file = "../data/ag_names.tsv")
 titer_clean <- read_tsv(file = "../data/titer_clean.tsv")
+titer_clean <- as.data.frame(titer_clean)
+ag_names <- ag_names[["value"]]
 row.names(titer_clean) <- ag_names
 
 ```
