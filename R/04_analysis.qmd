@@ -66,6 +66,8 @@ ag_df <- as.data.frame(ag_coords) |>
          type = 'AG',
          antigenic_group = attr_table_ag[["Antigenic group"]]) 
 
+
+## Clustering
 clustering_result <- dbscan::dbscan(ag_df[, 
                                        c("V1", "V2")], 
                                     eps = 0.5, # the maximum distance between two samples for one to be considered in the neighborhood
