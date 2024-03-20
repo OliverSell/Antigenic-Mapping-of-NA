@@ -34,16 +34,29 @@ Antigen names; H69775 (Wuhan), Alpha (B.1.1.7), Beta (B.1.351), Gamma (P.1), Del
 
 ## Generate data directories
 ```{r}
-make_dir("../_raw")
 make_dir("../data")
+make_dir("../data/_raw")
+
 ```
 
 ## Loading excel file
 
 ```{r}
-## SPØRG MARTHA
-## SPØRG MARTHA
-## SPØRG MARTHA
+
+# Use file.choose() for the user to select the file
+file_path <- file.choose()
+
+# Now read the selected Excel file
+excel_data <- readxl::read_excel(file_path)
+
+# Check if the data has been loaded correctly
+if (!is.null(excel_data)) {
+  message("Data loaded successfully.")
+} else {
+  message("Failed to load data.")
+}
+
+
 excel_data <- read_excel("../data/_raw/antigenic_map_template.xlsx")  ## AUTOMATE
 ## SPØRG MARTHA
 ## SPØRG MARTHA
