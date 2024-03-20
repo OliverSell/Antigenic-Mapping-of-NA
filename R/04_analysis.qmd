@@ -64,7 +64,7 @@ sr_coords <- srCoords(map)  # Serum coordinates
 ag_df <- as.data.frame(ag_coords) |>
   mutate(antigen = rownames(ag_coords),
          type = 'AG',
-         antigenic_group = attr_table_ag[["Antigenic group"]]) 
+         antigenic_group = attr_table_ag[["Antigenic group"]])
 
 
 ## Clustering
@@ -81,6 +81,10 @@ ag_df <- ag_df |>
 sr_df <- as.data.frame(sr_coords) |>
   mutate(serum = rownames(sr_coords),
          type = 'SR')
+# add DPI
+# add DPI
+# add DPI
+# add DPI
 
 dd <- bind_rows(ag_df, 
                 sr_df) |> 
@@ -112,17 +116,27 @@ dd <- dd |> mutate(color = colors_for_AG[antigen])
 
 unique_antigenic_groups <- unique(dd$antigenic_group)
 # Find antigenic groups not already in colors_for_AG
-new_groups <- unique_antigenic_groups[!unique_antigenic_groups %in% names(colors_for_AG)]
+new_groups <- unique_antigenic_groups[ 
+  !unique_antigenic_groups |> 
+    names(colors_for_AG)
+  ]
 
 # If there are new groups, generate colors for them
 if(length(new_groups) > 0) {
-  new_colors <- viridis::viridis(length(new_groups),option = "turbo")
+  new_colors <- viridis::viridis(
+    length(new_groups),
+    option = "turbo"
+    )
   # Add these new colors to the existing colors_for_AG
-  colors_for_AG <- c(colors_for_AG, setNames(new_colors, new_groups))
-}
+  colors_for_AG <- c(colors_for_AG,
+                     setNames(new_colors,
+                              new_groups)
+                     )}
 
 
-unique_serum_exposures <- unique(attr_table_sr$"Serum exposure")
+unique_serum_exposures <- unique(
+  attr_table_sr$"Serum exposure"
+  )
 # ag_df and antigenic_group to color
 antigenic_group_colors <- dd |> 
   filter(type == "AG") |> 
