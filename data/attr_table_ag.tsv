@@ -1,11 +1,6 @@
-Strain origin	Antigenic group	SSI name	Antigen name
-NA	Index	Somename 1	H69775 (wuhan)
-NA	Alpha	Somename 2	Alpha (B.1.1.7)
-NA	Beta	Somename 3	Beta (B.1.351)
-NA	Gamma	Somename 4	Gamma (P.1)
-NA	Delta	Somename 5	Delta B.1.617.2
-NA	Delta	Somename 6	Delta AY.33
-NA	Delta	Somename 7	Delta AY.4
-NA	Delta	Somename 8	Delta AY.4.2
-NA	Delta	Somename 9	Delta B.1.617.2+E484K
-NA	Omicron	Somename 10	Omicron
+Antigen Comments	Strain origin	SSI name	Antigenic group	Serum vaccine homolog	Antigen name
+SSI Lab	H1N1 A/CA/04/2009	NA	H1N1	Group 2	Pandemic 2009 H1N1
+Ramona Trebbien's lab	H1N1 A/Denmark/2021/01	NA	H1N1	NA	Challenge strain for this study
+Richard Webby's lab	H6N1 A/CA/04/2009/N1 (H1N1)	NA	H6N1	NA	HA is recombinant H6, NA is the same as Pandemic 2009 H1N1
+Richard Webby's lab	H6N2 A/Texas/50/2012(4) (H3N2)	NA	H6N2	NA	unrelated NA with Recombinant H6
+Ramona Trebbien's lab	A/sw/H1N1/Denmark/2017	NA	H1N1	Group 1???	swine- H1N1

@@ -61,14 +61,11 @@ make_dir("../data/_raw")
 # file_path <- file.choose()
 
 # Now read the selected Excel file
-excel_data <- readxl::read_excel(file_path)
+# excel_data <- readxl::read_excel(file_path)
 
 # Check if the data has been loaded correctly
-if (!is.null(excel_data)) {
-  message("Data loaded successfully.")
-} else {
-  message("Failed to load data.")
-}
+#if (!is.null(excel_data)) {message("Data loaded successfully.")} 
+#else {message("Failed to load data.")}
 
 
 excel_data <- read_excel("../data/_raw/acmap_NA.xlsx")  ## AUTOMATE
