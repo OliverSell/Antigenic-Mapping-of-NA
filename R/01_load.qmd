@@ -58,7 +58,7 @@ make_dir("../data/_raw")
 ```{r}
 
 # Use file.choose() for the user to select the file
-file_path <- file.choose()
+# file_path <- file.choose()
 
 # Now read the selected Excel file
 excel_data <- readxl::read_excel(file_path)
@@ -71,7 +71,7 @@ if (!is.null(excel_data)) {
 }
 
 
-excel_data <- read_excel("../data/_raw/antigenic_map_template.xlsx")  ## AUTOMATE
+excel_data <- read_excel("../data/_raw/acmap_NA.xlsx")  ## AUTOMATE
 ## SPØRG MARTHA
 ## SPØRG MARTHA
 ## SPØRG MARTHA
