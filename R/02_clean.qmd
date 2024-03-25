@@ -82,7 +82,8 @@ attr_table_sr <- titer_table |>
   slice(-(1:7)) |> #1:6 covid
   set_colnames_from_row(row_number = 1) |> 
   #Removing semicolon from names
-  rename_with( ~ gsub(":", "", .x))
+  rename_with( ~ gsub(":", "", .x)) |> 
+  mutate(sera_name_with_DPI = paste(`Serum IDs`, `Serum DPI`, sep = "_"))
 
 attr_table_ag <- titer_table |> 
   slice(-(1:10)) |> 

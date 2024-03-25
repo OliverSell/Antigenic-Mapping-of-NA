@@ -48,8 +48,8 @@ options(RacOptimizer.num_cores = parallel::detectCores())
 map <- acmap(
   titer_table = titer_clean
 )
-# Perform optimization runs on the map object to try and determine a best map
 
+# Perform optimization runs on the map object to try and determine a best map
 map <- optimizeMap(
   map,
   number_of_dimensions    = 2,
@@ -57,45 +57,7 @@ map <- optimizeMap(
   minimum_column_basis    = "none"
 )
 
-print(mapStress(map))
 
-#### UNCERTAINTY
-#### UNCERTAINTY
-#### UNCERTAINTY
-triangulationBlobs(
-  map,
-  optimization_number = 10,
-  stress_lim = 1,
-  grid_spacing = 0.25,
-  antigens = TRUE,
-  sera = TRUE,
-  .check_relaxation = TRUE,
-  .options = list()
-)
-
-
-bootstrapMap(
-  map,
-  method = "resample", #"resample", "bayesian" or "noisy"
-  bootstrap_repeats = 1000,
-  bootstrap_ags = TRUE,
-  bootstrap_sr = TRUE,
-  reoptimize = TRUE,
-  optimizations_per_repeat = 100,
-  ag_noise_sd = 0.7,
-  titer_noise_sd = 0.7,
-  options = list()
-)
-
-bootstrapBlobs(
-  map,
-  conf.level = 0.68,
-  smoothing = 6,
-  gridspacing = 0.25,
-  antigens = TRUE,
-  sera = TRUE,
-  method = "ks"
-)
 
 #### UNCERTAINTY
 #### UNCERTAINTY
