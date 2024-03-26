@@ -24,3 +24,16 @@ set_colnames_from_row <- function(tbl, row_number = 1) {
   
   return(tbl)
 }
+
+
+get_latest_version_folder <- function(base_path, folder_prefix, date) {
+  potential_folders <- c(paste0(folder_prefix, date), paste0(folder_prefix, date, "_v", 1:100))
+  existing_folders <- potential_folders[dir.exists(file.path(base_path, potential_folders))]
+  
+  if (length(existing_folders) > 0) {
+    selected_folder <- existing_folders[which.max(nchar(existing_folders))]
+    return(file.path(base_path, selected_folder))
+  } else {
+    stop("No matching folders found.")
+  }
+}
