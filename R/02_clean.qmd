@@ -62,7 +62,7 @@ titer_clean <- t(titer_dirty)
 #Getting data ready for mapping
 titer_clean <- titer_clean |> 
   as.data.frame() |> 
-  mutate(across(everything(), ~replace_na(.x, "*")))
+  mutate(across(everything(), ~replace_na(.x, "*"))) # Pseudo counts? then == 1
 
 #Defining the amount of sera and antigen
 antigen_sera_n <- ncol(titer_clean)
