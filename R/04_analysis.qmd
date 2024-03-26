@@ -83,7 +83,9 @@ sr_df <- as.data.frame(sr_coords) |>
          type = 'SR')
 
 dd <- bind_rows(ag_df, 
-                sr_df) |> 
+                sr_df) 
+
+dd <- dd |>
   mutate(
     serum_group = attr_table_sr$"Serum exposure antigen"[match(dd$serum, 
                                                   attr_table_sr$"sera_name_with_DPI")]
@@ -143,8 +145,10 @@ if(num_clusters <= 8) {
   cluster_colors <- rep(brewer.pal(8, "Dark2"), # repeating palette
                         length.out = num_clusters)
 }
-
-names(cluster_colors) <- as.character(seq_len(num_clusters))
+ 
+# FIX FIX FIX FIX # FIX FIX FIX FIX # FIX FIX FIX FIX # FIX FIX FIX FIX
+names(cluster_colors) <- as.character(seq_len(num_clusters)) # FIX FIX FIX FIX
+# FIX FIX FIX FIX # FIX FIX FIX FIX # FIX FIX FIX FIX # FIX FIX FIX FIX
 
 combined_colors <- c(cluster_colors, colors_for_AG, colors_for_SR)
 
@@ -167,8 +171,8 @@ base_map <- ggplot(dd) +
   labs(title = paste0("Antigenic map of ", table_info |> pull(virus_type), " variants"),
        subtitle = paste0("Inhibition titers for ", table_info |> pull(viral_protein), 
                          " analyzed via ", table_info |> pull(assay_type)),
-       x = "", y = "", color = "Serum group",
-       caption = "Wilks et al., 2023") +
+       x = "", y = "", 
+       color = "Serum group") +
   theme(axis.text.x = element_blank(), 
         axis.text.y = element_blank(),
         plot.background = element_rect(fill = "white"), 
@@ -299,9 +303,11 @@ ag_groups_with_multiple_entries <- ag_counts |>
 dd_multiple_entries <- dd |>
   filter(antigenic_group %in% ag_groups_with_multiple_entries)
 
-dd_cluster <- dd |>
-  filter(type == "AG") |>
-  filter(cluster != 0)
+# FIX FIX FIX FIX
+dd_cluster <- dd |> # FIX FIX FIX FIX
+  filter(type == "AG") |> # FIX FIX FIX FIX
+  filter(cluster != 0) # FIX FIX FIX FIX
+# FIX FIX FIX FIX
 
 ag_map_5 <- base_map +
   geom_point(data = filter(dd, type == "AG"), 
