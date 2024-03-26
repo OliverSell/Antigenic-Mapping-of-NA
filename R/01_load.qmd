@@ -68,7 +68,7 @@ make_dir("../data/_raw")
 #else {message("Failed to load data.")}
 
 
-excel_data <- read_excel("../data/_raw/acmap_NA.xlsx")  ## AUTOMATE
+excel_data <- read_excel("../data/_raw/acmap_covid.xlsx")  ## AUTOMATE
 ## SPØRG MARTHA
 ## SPØRG MARTHA
 ## SPØRG MARTHA

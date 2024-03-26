@@ -54,7 +54,8 @@ map <- optimizeMap(
   map,
   number_of_dimensions    = 2,
   number_of_optimizations = 10000,
-  minimum_column_basis    = "none"
+  minimum_column_basis    = "none",
+  options = list(ignore_disconnected = TRUE)
 )
 
 
