@@ -162,16 +162,30 @@ Antigenic Mapping
 ############################
 # Generating Antigenic Map #
 ############################
+
+
+
+
 base_map <- ggplot(dd) +
   geom_point(data = filter(dd, type == "SR"), 
              aes(x = V1, y = V2, shape = type, color = serum_group), 
              size = 2, shape = 0, stroke = 0.4, alpha = 0.7) +
+  scale_x_continuous(breaks = seq(floor(range(dd$V1))[1], 
+                                  floor(range(dd$V1))[2])) +
+  scale_y_reverse(breaks = seq(floor(range(dd$V2))[1], 
+                               floor(range(dd$V2))[2])) +
+  coord_fixed() + 
+  
   scale_fill_manual(values = combined_colors) +
   scale_color_manual(values = combined_colors) +
-   scale_x_continuous(breaks = seq(from = floor(min(dd$V1)), 
-                                  to = ceiling(max(dd$V1)), by = 1)) +
-  scale_y_continuous(breaks = seq(from = floor(min(dd$V2)), 
-                                  to = ceiling(max(dd$V2)), by = 1)) +
+  
+  #scale_x_continuous(
+  #    breaks = function(V1) seq(from = V1[1], to = V1[2], by = 1)
+  #  ) +
+  #  ggplot2::scale_y_continuous(
+  #    breaks = function(V2) seq(from = V2[1], to = V2[2], by = 1)
+   # ) +
+    # ggplot2::coord_fixed(      expand = FALSE,      xlim = xlim,       ylim = ylim    ) + 
   theme_minimal() +
   labs(title = paste0("Antigenic map of ", table_info |> pull(virus_type), " variants"),
        subtitle = paste0("Inhibition titers for ", table_info |> pull(viral_protein), 
@@ -182,6 +196,7 @@ base_map <- ggplot(dd) +
         axis.text.y = element_blank(),
         plot.background = element_rect(fill = "white"), 
         panel.background = element_rect(fill = "white"), 
+        panel.grid.major = element_line(), 
         panel.grid.minor = element_blank(), 
         plot.caption = element_text(hjust = 1, 
                                     vjust = 1, 
@@ -241,7 +256,6 @@ ag_map_2 <- base_map +
   geom_point(data = filter(dd, type == "AG"), 
              aes(x = V1, y = V2, fill = antigen), 
              shape = 21, size = 6, color = "black") +
-  coord_cartesian(clip = "off") +
   
   geom_text_repel(aes(x = V1, 
                       y = V2, 
