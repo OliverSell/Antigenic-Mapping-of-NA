@@ -69,7 +69,7 @@ ag_df <- as.data.frame(ag_coords) |>
 
 clustering_result <- dbscan::dbscan(ag_df[, 
                                        c("V1", "V2")], 
-                                    eps = 0.5, # the maximum distance between two samples for one to be considered in the neighborhood
+                                    eps = 0.7, # the maximum distance between two samples for one to be considered in the neighborhood
                                     minPts = 2) # number of samples in a neighborhood for a point to be considered a core point
 
 
