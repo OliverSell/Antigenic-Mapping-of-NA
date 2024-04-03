@@ -68,7 +68,6 @@ triangulationBlobs(
   .options = list()
 )
 
-
 bootstrapMap(
   map,
   method = "resample", #"resample", "bayesian" or "noisy"

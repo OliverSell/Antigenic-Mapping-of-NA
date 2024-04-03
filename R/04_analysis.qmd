@@ -198,33 +198,27 @@ base_map <- ggplot(dd) +
         panel.background = element_rect(fill = "white"), 
         panel.grid.major = element_line(), 
         panel.grid.minor = element_blank(), 
-        plot.caption = element_text(hjust = 1, 
-                                    vjust = 1, 
-                                    margin = margin(t = 1, 
-                                                    unit = "pt"), 
-                                    size = 12, 
-                                    color = "darkgrey", 
-                                    face = "italic"),
+        legend.title = element_text(margin = margin(l = 1, unit = "pt")),
         panel.border = element_rect(colour = "azure4", 
                                     fill = NA, 
                                     size = 1.5), 
         plot.margin = margin(t = 20, 
                              r = 20, 
-                             b = 5, 
+                             b = 10, 
                              l = 10, 
                              unit = "pt"),
         plot.subtitle = element_text(margin = margin(t = 2, 
                                                      b = 10, 
                                                      l = 10,
-                                                     unit = "pt")),
+                                                     r = 5,
+                                                     unit = "pt"),
+                                     size = 10),
         plot.title = element_text(face = "bold",
                                   margin = margin(l = 10, 
                                                     unit = "pt")), 
-        plot.caption.position = "plot", 
         plot.title.position = "plot",
-        legend.position = "right", 
-        legend.spacing.y = unit(-7, 
-                                "pt"))
+        legend.margin= margin(l = 10, unit = "pt"),
+        legend.position = "right")
 ```
 
 
@@ -237,9 +231,9 @@ ag_map_1 <- base_map +
              aes(x = V1, y = V2, fill = antigen), 
              shape = 21, size = 6, color = "black") +
   labs(fill = "Antigen") + 
-  guides(fill = guide_legend(override.aes = list(size = 5)), 
+  guides(fill = guide_legend(override.aes = list(size = 3)), 
          shape = "none", size = "none",
-         color = guide_legend(override.aes = list(size = 3, stroke = 0.8)))
+         color = guide_legend(override.aes = list(size = 2, stroke = 0.8)))
   
 
 ```
