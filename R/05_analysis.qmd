@@ -93,3 +93,238 @@ bootstrapBlobs(
 
 ```
 
+```{r}
+milestone_2 <- ggplot(dd) +
+  geom_point(data =  filter(dd, type == "SR", !is.na(serum_group)), 
+             aes(x = V1, y = V2, shape = type, color = serum_group), 
+             size = 2, shape = 0, stroke = 0.4, alpha = 0.7) + 
+  geom_point(data = filter(dd, is.na(serum_group)),  
+             aes(x = V1, y = V2, color = "Other"),  
+             shape = 0, size = 2, alpha = 0.7) +
+  geom_point(data = filter(dd, type == "AG"), 
+             aes(x = V1, y = V2, fill = antigen), 
+             shape = 21, size = 6, color = "black") +
+  
+  scale_y_reverse(breaks = seq(floor(range(dd$V2))[1], 
+                               ceiling(range(dd$V2))[2]),
+                  expand = expansion(mult = 0, add = 1.0)) +
+  scale_x_continuous(breaks = seq(floor(range(dd$V1))[1], 
+                                  ceiling(range(dd$V1))[2]),
+                     expand = expansion(mult = 0, add = 1.0)) +
+
+  coord_fixed() + 
+  scale_size_identity() + 
+  
+  scale_fill_manual(values = combined_colors) +
+  scale_color_manual(values = combined_colors) +
+  
+  theme_minimal() +
+  labs(title = "Antigenic map of Influenza variants",
+       subtitle = "Inhibition titers for neuraminidase analyzed via ELLA",
+       x = "", y = "", 
+       color = "Serum group",
+       fill = "Antigen") +
+  theme(axis.text.x = element_blank(), 
+        axis.text.y = element_blank(),
+        plot.background = element_rect(fill = "white"), 
+        panel.background = element_rect(fill = "white"), 
+        panel.grid.major = element_line(), 
+        panel.grid.minor = element_blank(), 
+        legend.title = element_text(margin = margin(l = 1, unit = "pt")),
+        legend.text = element_text(size = 8),
+        panel.border = element_rect(colour = "azure4", 
+                                    fill = NA, 
+                                    size = 1.5), 
+        plot.margin = margin(t = 20, 
+                             r = 20, 
+                             b = 10, 
+                             l = 10, 
+                             unit = "pt"),
+        plot.subtitle = element_text(margin = margin(t = 2, 
+                                                     b = 10, 
+                                                     l = 10,
+                                                     r = 5,
+                                                     unit = "pt"),
+                                     size = 10),
+        plot.title = element_text(face = "bold",
+                                  margin = margin(l = 10, 
+                                                    unit = "pt")), 
+        plot.title.position = "plot",
+        legend.margin= margin(l = 10, unit = "pt"),
+        legend.position = "right") +
+  labs(fill = "Antigen") + 
+  guides(fill = guide_legend(override.aes = list(size = 3)), 
+         shape = "none", size = "none",
+         color = guide_legend(override.aes = list(size = 2, stroke = 0.8)))
+
+
+```
+
+```{r}
+milestone_3a <- ggplot(dd) +
+  geom_point(data =  filter(dd, type == "SR", !is.na(serum_group)), 
+             aes(x = V1, y = V2, shape = type, color = serum_group), 
+             size = 2, shape = 0, stroke = 0.4, alpha = 0.7) + 
+  geom_point(data = filter(dd, is.na(serum_group)),  
+             aes(x = V1, y = V2, color = "Other"),  
+             shape = 0, size = 2, alpha = 0.7) +
+  geom_point(data = filter(dd, type == "AG"), 
+             aes(x = V1, y = V2, fill = antigen), 
+             shape = 21, size = 6, color = "black") +
+  
+  scale_y_reverse(breaks = seq(floor(range(dd$V2))[1], 
+                               ceiling(range(dd$V2))[2]),
+                  expand = expansion(mult = 0, add = 1.0)) +
+  scale_x_continuous(breaks = seq(floor(range(dd$V1))[1], 
+                                  ceiling(range(dd$V1))[2]),
+                     expand = expansion(mult = 0, add = 1.0)) +
+  geom_text_repel(aes(x = V1, 
+                      y = V2, 
+                      label = antigen),
+                  size = 3, 
+                  box.padding = unit(0.4, 
+                                     "lines"), 
+                  point.padding = unit(1.05, "lines"),
+                  segment.linetype = 1, 
+                  min.segment.length = 0.4, 
+                  arrow = arrow(length = unit(0.015, "npc")),
+                  segment.curvature = 0, 
+                  segment.alpha = 0.7, 
+                  force_pull = 1.0, 
+                  force = 1.0, 
+                  max.iter = 10000,
+                  xlim = c(-NA, NA), 
+                  ylim = c(-NA, NA), 
+                  bg.color = "white", 
+                  bg.r = 0.10) +
+
+  coord_fixed() + 
+  scale_size_identity() + 
+  
+  scale_fill_manual(values = combined_colors) +
+  scale_color_manual(values = combined_colors) +
+  
+  theme_minimal() +
+  labs(title = "Antigenic map of Influenza variants",
+       subtitle = "Inhibition titers for neuraminidase analyzed via ELLA",
+       x = "", y = "", 
+       color = "Serum group",
+       fill = "Antigen") +
+  theme(axis.text.x = element_blank(), 
+        axis.text.y = element_blank(),
+        plot.background = element_rect(fill = "white"), 
+        panel.background = element_rect(fill = "white"), 
+        panel.grid.major = element_line(), 
+        panel.grid.minor = element_blank(), 
+        legend.title = element_text(margin = margin(l = 1, unit = "pt")),
+        legend.text = element_text(size = 8),
+        panel.border = element_rect(colour = "azure4", 
+                                    fill = NA, 
+                                    size = 1.5), 
+        plot.margin = margin(t = 20, 
+                             r = 20, 
+                             b = 10, 
+                             l = 10, 
+                             unit = "pt"),
+        plot.subtitle = element_text(margin = margin(t = 2, 
+                                                     b = 10, 
+                                                     l = 10,
+                                                     r = 5,
+                                                     unit = "pt"),
+                                     size = 10),
+        plot.title = element_text(face = "bold",
+                                  margin = margin(l = 10, 
+                                                    unit = "pt")), 
+        plot.title.position = "plot",
+        legend.margin= margin(l = 10, unit = "pt"),
+        legend.position = "right") +
+  labs(fill = "Antigen") + 
+  guides(fill = FALSE, 
+         shape = "none", size = "none",
+         color = guide_legend(override.aes = list(size = 2, stroke = 0.8)))
+
+milestone_3b <- ggplot(dd) +
+  geom_point(data =  filter(dd, type == "SR", !is.na(serum_group)), 
+             aes(x = V1, y = V2, shape = type, color = serum_group), 
+             size = 2, shape = 0, stroke = 0.4, alpha = 0.7) + 
+  geom_point(data = filter(dd, is.na(serum_group)),  
+             aes(x = V1, y = V2, color = "Other"),  
+             shape = 0, size = 2, alpha = 0.7) +
+  geom_point(data = filter(dd, 
+                           type == "AG"), 
+             aes(x = V1, y = V2, fill = antigenic_group), 
+             shape = 21, size = 6, color = "black")  +
+  
+  scale_y_reverse(breaks = seq(floor(range(dd$V2))[1], 
+                               ceiling(range(dd$V2))[2]),
+                  expand = expansion(mult = 0, add = 1.0)) +
+  scale_x_continuous(breaks = seq(floor(range(dd$V1))[1], 
+                                  ceiling(range(dd$V1))[2]),
+                     expand = expansion(mult = 0, add = 1.0)) +
+  geom_text_repel(data = dd_multiple_entries,
+                  aes(x = V1, 
+                      y = V2, 
+                      label = antigen),
+                  size = 3, 
+                  box.padding = unit(0.35, "lines"), 
+                  point.padding = unit(0.8, "lines"),
+                  segment.linetype = 1, 
+                  min.segment.length = 0.4, 
+                  arrow = arrow(length = unit(0.015, "npc")),
+                  segment.curvature = 0, 
+                  segment.alpha = 0.7, 
+                  force_pull = 1.0, 
+                  force = 1.0, 
+                  max.iter = 10000,
+                  xlim = c(-NA, NA), 
+                  ylim = c(-NA, NA), 
+                  bg.color = "white", 
+                  bg.r = 0.10) +
+  coord_fixed() + 
+  scale_size_identity() + 
+  
+  scale_fill_manual(values = combined_colors) +
+  scale_color_manual(values = combined_colors) +
+  
+  theme_minimal() +
+  labs(title = paste0("Antigenic map of ", table_info |> pull(virus_type), " variants"),
+       subtitle = paste0("Inhibition titers for ", table_info |> pull(viral_protein), 
+                         " analyzed via ", table_info |> pull(assay_type)),
+       x = "", y = "", 
+       color = "Serum group",
+       fill = "Antigenic group") +
+  theme(axis.text.x = element_blank(), 
+        axis.text.y = element_blank(),
+        plot.background = element_rect(fill = "white"), 
+        panel.background = element_rect(fill = "white"), 
+        panel.grid.major = element_line(), 
+        panel.grid.minor = element_blank(), 
+        legend.title = element_text(margin = margin(l = 1, unit = "pt")),
+        legend.text = element_text(size = 8),
+        panel.border = element_rect(colour = "azure4", 
+                                    fill = NA, 
+                                    size = 1.5), 
+        plot.margin = margin(t = 20, 
+                             r = 20, 
+                             b = 10, 
+                             l = 10, 
+                             unit = "pt"),
+        plot.subtitle = element_text(margin = margin(t = 2, 
+                                                     b = 10, 
+                                                     l = 10,
+                                                     r = 5,
+                                                     unit = "pt"),
+                                     size = 10),
+        plot.title = element_text(face = "bold",
+                                  margin = margin(l = 10, 
+                                                    unit = "pt")), 
+        plot.title.position = "plot",
+        legend.margin= margin(l = 10, unit = "pt"),
+        legend.position = "right") +
+  labs(fill = "Antigen") + 
+  guides(fill = guide_legend(override.aes = list(size = 3)), 
+         shape = "none", size = "none",
+         color = guide_legend(override.aes = list(size = 2, stroke = 0.8)))
+```
+
+

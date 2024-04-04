@@ -73,10 +73,16 @@ make_dir("../data/_raw")
 #}
 
 
-excel_data <- read_excel("../data/_raw/acmap_covid.xlsx")  ## AUTOMATE
+excel_data <- read_excel("../data/_raw/acmap_NA.xlsx", na = "", skip = 0)  ## AUTOMATE
 ## SPØRG MARTHA
 ## SPØRG MARTHA
 ## SPØRG MARTHA
+
+# If named "NA", then rename to neuraminidase
+excel_data <- excel_data %>%
+  mutate(across(6, ~ifelse(row_number() == 4 & .x == "NA", "neuraminidase", .x))) |>
+  mutate(across(where(is.character), ~na_if(.x, "NA")))
+
 
 write_csv(excel_data, "../data/excel_csv.csv.gz")
 ```

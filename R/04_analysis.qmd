@@ -147,11 +147,14 @@ if(num_clusters <= 8) {
                         length.out = num_clusters)
 }
  
-# FIX FIX FIX FIX # FIX FIX FIX FIX # FIX FIX FIX FIX # FIX FIX FIX FIX
-names(cluster_colors) <- as.character(seq_len(num_clusters)) # FIX FIX FIX FIX
-# FIX FIX FIX FIX # FIX FIX FIX FIX # FIX FIX FIX FIX # FIX FIX FIX FIX
+if (!is.null(num_clusters) && length(num_clusters) > 0 && num_clusters > 0) {
+  names(cluster_colors) <- as.character(seq_len(num_clusters))
+}
 
-combined_colors <- c(cluster_colors, colors_for_AG, colors_for_SR)
+combined_colors <- c(cluster_colors, 
+                     colors_for_AG, 
+                     colors_for_SR, 
+                     "Other" = "grey")
 
 
 
@@ -163,9 +166,12 @@ Antigenic Mapping
 # Generating Antigenic Map #
 ############################
 base_map <- ggplot(dd) +
-  geom_point(data = filter(dd, type == "SR"), 
+  geom_point(data = filter(dd, type == "SR", !is.na(serum_group)), 
              aes(x = V1, y = V2, shape = type, color = serum_group), 
              size = 2, shape = 0, stroke = 0.4, alpha = 0.7) +  
+  geom_point(data = filter(dd, is.na(serum_group)),  
+             aes(x = V1, y = V2, color = "Other"),  
+             shape = 0, size = 2, alpha = 0.7) +
   scale_y_reverse(breaks = seq(floor(range(dd$V2))[1], 
                                ceiling(range(dd$V2))[2]),
                   expand = expansion(mult = 0, add = 1.0)) +
@@ -192,6 +198,7 @@ base_map <- ggplot(dd) +
         panel.grid.major = element_line(), 
         panel.grid.minor = element_blank(), 
         legend.title = element_text(margin = margin(l = 1, unit = "pt")),
+        legend.text = element_text(size = 8),
         panel.border = element_rect(colour = "azure4", 
                                     fill = NA, 
                                     size = 1.5), 
@@ -212,6 +219,9 @@ base_map <- ggplot(dd) +
         plot.title.position = "plot",
         legend.margin= margin(l = 10, unit = "pt"),
         legend.position = "right")
+
+##############################
+
 ```
 
 
@@ -316,10 +326,13 @@ dd_cluster <- dd |> # FIX FIX FIX FIX
 # FIX FIX FIX FIX
 
 ag_map_5 <- base_map +
-  geom_point(data = filter(dd, type == "AG"), 
-             aes(x = V1, y = V2, fill = antigenic_group), 
-             shape = 21, size = 6, color = "black") +
-  coord_cartesian(clip = "off") +
+  geom_point(data = filter(dd, 
+                           type == "AG"), 
+             aes(x = V1, y = V2, 
+                 fill = antigenic_group), 
+             shape = 21, 
+             size = 6, 
+             color = "black") +
   
   geom_text_repel(data = dd_multiple_entries,
                   aes(x = V1, 
@@ -406,7 +419,7 @@ ag_map_8 <- base_map +
     aes(x = V1, y = V2, fill = antigenic_group),  # Fill based on antigenic group
     shape = 21, size = 6, color = "black"
   ) +
-  coord_cartesian(clip = "on") +
+
   geom_text_repel(data = dd_cluster,
                   aes(x = V1, 
                       y = V2, 
