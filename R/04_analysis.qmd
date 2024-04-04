@@ -179,13 +179,6 @@ base_map <- ggplot(dd) +
   scale_fill_manual(values = combined_colors) +
   scale_color_manual(values = combined_colors) +
   
-  #scale_x_continuous(
-  #    breaks = function(V1) seq(from = V1[1], to = V1[2], by = 1)
-  #  ) +
-  #  ggplot2::scale_y_continuous(
-  #    breaks = function(V2) seq(from = V2[1], to = V2[2], by = 1)
-   # ) +
-    # ggplot2::coord_fixed(      expand = FALSE,      xlim = xlim,       ylim = ylim    ) + 
   theme_minimal() +
   labs(title = paste0("Antigenic map of ", table_info |> pull(virus_type), " variants"),
        subtitle = paste0("Inhibition titers for ", table_info |> pull(viral_protein), 
