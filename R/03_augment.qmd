@@ -33,7 +33,6 @@ row.names(titer_clean) <- ag_names
 
 ```
 
-
 ### Augment
 
 ```{r}
@@ -65,7 +64,6 @@ map <- optimizeMap(
 
 ```
 
-
 ### map file
 
 ```{r}
@@ -73,9 +71,7 @@ map <- optimizeMap(
 # Define the path to the 'results' directory relative to the 'R' directory
 results_directory <- file.path(getwd(), "../data")
 
-# Specify the filename directly instead of using tempfile
-# Replace 'my_custom_filename' with your desired filename
-custom_filename <- "map.ace"  # Change 'my_custom_filename' to whatever you want
+custom_filename <- "map.ace"  
 file_path <- file.path("../data", custom_filename)
 
 # Use the specified path to save the .ace file

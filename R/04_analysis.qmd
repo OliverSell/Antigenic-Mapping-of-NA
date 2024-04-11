@@ -275,7 +275,7 @@ ag_map_2 <- base_map +
                   bg.r = 0.10) +
   labs(fill = "Antigen") + 
   guides(fill = FALSE, 
-         color = guide_legend(override.aes = list(size = 3, stroke = 0.8)))
+         color = guide_legend(override.aes = list(size = 2, stroke = 0.8)))
 ```
 
 ## Plain plot
@@ -289,8 +289,8 @@ ag_map_3 <- base_map +
              aes(x = V1, y = V2, fill = antigen), 
              shape = 21, size = 6, color = "black") +
   labs(fill = "Antigen") + 
-  guides(fill = guide_legend(override.aes = list(size = 5)), shape = "none", size = "none",
-         color = guide_legend(override.aes = list(size = 3, stroke = 0.8))) +
+  guides(fill = guide_legend(override.aes = list(size = 3)), shape = "none", size = "none",
+         color = guide_legend(override.aes = list(size = 2, stroke = 0.8))) +
   theme(legend.position = "none")
 ```
 
@@ -303,8 +303,8 @@ ag_map_4 <- base_map +
              aes(x = V1, y = V2, fill = antigenic_group), 
              shape = 21, size = 6, color = "black") +
   labs(fill = "Antigenic group") + 
-  guides(fill = guide_legend(override.aes = list(size = 5)), shape = "none", size = "none",
-         color = guide_legend(override.aes = list(size = 3, stroke = 0.8)))
+  guides(fill = guide_legend(override.aes = list(size = 3)), shape = "none", size = "none",
+         color = guide_legend(override.aes = list(size = 2, stroke = 0.8)))
 
 ag_counts <- dd |>
   filter(type == "AG") |>
@@ -355,8 +355,8 @@ ag_map_5 <- base_map +
                   bg.r = 0.10) +
   labs(fill = "Antigenic group") + 
   
-  guides(fill = guide_legend(override.aes = list(size = 5)), 
-         color = guide_legend(override.aes = list(size = 3, stroke = 0.8)))
+  guides(fill = guide_legend(override.aes = list(size = 3)), 
+         color = guide_legend(override.aes = list(size = 2, stroke = 0.8)))
 
 ```
 
@@ -379,7 +379,7 @@ ag_map_6 <- base_map +
     shape = 21, size = 6, color = "black"
   ) +
   labs(fill = "Antigen") + 
-  guides(fill = guide_legend(override.aes = list(size = 5)), 
+  guides(fill = guide_legend(override.aes = list(size = 3)), 
          color = guide_legend(override.aes = list(size = 2))) +
   scale_color_manual(values = combined_colors,
                      breaks = unique_serum_exposures, # Specify which legends to display
@@ -399,7 +399,7 @@ ag_map_7 <- base_map +
     shape = 21, size = 6, color = "black"
   ) +
   labs(fill = "Antigenic group") + 
-  guides(fill = guide_legend(override.aes = list(size = 5)), 
+  guides(fill = guide_legend(override.aes = list(size = 3)), 
          color = guide_legend(override.aes = list(size = 2))) +
   scale_color_manual(values = combined_colors,
                      breaks = unique_serum_exposures, # Specify which legends to display
@@ -440,7 +440,7 @@ ag_map_8 <- base_map +
                   bg.color = "white", 
                   bg.r = 0.10) +
   labs(fill = "Antigenic group") + 
-  guides(fill = guide_legend(override.aes = list(size = 5)), 
+  guides(fill = guide_legend(override.aes = list(size = 3)), 
          color = guide_legend(override.aes = list(size = 2))) +
   scale_color_manual(values = combined_colors,
                      breaks = unique_serum_exposures, # Specify which legends to display
@@ -456,7 +456,7 @@ Saving the relevant plots
 ############################
 # Save the map (.svg.tiff) #
 ############################
-folder_name <- paste0("../results/antigenic_map_", 
+folder_name <- paste0("../results/ac_map_", 
                       table_info |>
                           pull(virus_type) , 
                       "_", Sys.Date())
@@ -488,7 +488,7 @@ folder_name <- paste0("../results/antigenic_map_",
 
 make_dir(folder_name)
 
-base_filename <- paste0("antigenic_map_", 
+base_filename <- paste0("ac_map_", 
                         table_info |>
                           pull(virus_type), 
                         "_", Sys.Date())

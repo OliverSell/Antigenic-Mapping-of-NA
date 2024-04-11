@@ -34,11 +34,11 @@ library("RColorBrewer")
 ### Loading
 
 ```{r}
-file_path <- file.path(getwd(), "../data/map.ace")
+file_path <- file.path(getwd(), "../data/map_covid.ace")
 
 map <- read.acmap(
   file_path,
-  optimization_number = NULL,
+  optimization_number = 1,
   sort_optimizations = FALSE,
   align_optimizations = FALSE
 )
@@ -51,22 +51,44 @@ table_info <- read_tsv(file = "../data/table_info.tsv")
 ```
 
 ```{r}
+#options(RacOptimizer.num_cores = 1)
+options(RacOptimizer.num_cores = parallel::detectCores())
 
-print(mapStress(map))
-
-#### UNCERTAINTY
-#### UNCERTAINTY
-#### UNCERTAINTY
-triangulationBlobs(
+map <- relaxMap(
   map,
-  optimization_number = 10,
+  optimization_number = 1,
+  fixed_antigens = FALSE,
+  fixed_sera = FALSE,
+  titer_weights = NULL,
+  options = list()
+)
+#### UNCERTAINTY
+
+
+# Calculate triangulation blobs
+triangulation <- triangulationBlobs(map, grid_spacing = 0.05, stress_lim = 1)
+
+# Plot maps
+maplims <- Racmacs:::mapPlotLims(map, sera = TRUE)
+gp_triangulation <- ggplot(triangulation, xlim = maplims$xlim, ylim = maplims$ylim)
+#### UNCERTAINTY
+#### UNCERTAINTY
+map_blob <- triangulationBlobs(
+  map,
+  optimization_number = 1,
   stress_lim = 1,
-  grid_spacing = 0.25,
+  grid_spacing = 0.05,
   antigens = TRUE,
   sera = TRUE,
-  .check_relaxation = TRUE,
-  .options = list()
+  .check_relaxation = TRUE
 )
+
+contour_blob(map)
+
+ggplot(map_blob)
+
+plot(map_blob)
+view(map_blob)
 
 bootstrapMap(
   map,
@@ -327,4 +349,19 @@ milestone_3b <- ggplot(dd) +
          color = guide_legend(override.aes = list(size = 2, stroke = 0.8)))
 ```
 
+## Save
+
+```{r}
+# Define the path to the 'results' directory relative to the 'R' directory
+results_directory <- file.path(getwd(), "../data")
+
+
+custom_filename <- "map_blob.ace"  
+file_path <- file.path("../data", custom_filename)
+
+# Use the specified path to save the .ace file
+save.acmap(
+  map_blob,
+  file_path)
+```
 
