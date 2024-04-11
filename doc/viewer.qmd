@@ -1,0 +1,66 @@
+---
+title: "Interactive viewer"
+execute:
+  echo: false
+
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: styles.css
+    number-sections: true
+---
+
+# Antigenic mapping
+
+```{r}
+
+
+```
+
+```{r}
+#| output: false 
+library("Racmacs")
+library("tidyverse")
+
+file_path <- file.path(getwd(), "../data/map.ace")
+
+map <- read.acmap(
+  file_path,
+  optimization_number = 100,
+  sort_optimizations = FALSE,
+  align_optimizations = FALSE
+)
+
+attr_table_ag <- read_tsv(file = "../data/attr_table_ag.tsv")
+attr_table_sr <- read_tsv(file = "../data/attr_table_sr.tsv")
+table_info <- read_tsv(file = "../data/table_info.tsv")
+titer_clean <- read_tsv(file = "../data/titer_clean.tsv")
+dd <- read_tsv(file = "../data/dd.tsv")
+ag_names <- read_tsv(file = "../data/ag_names.tsv")
+
+legend_names <- ag_names |> 
+  pull() |> 
+  as.character()
+
+colors <- dd |> 
+  select(color) |> 
+  filter(!is.na(color)) |> 
+  pull() |> 
+  as.character()
+
+agFill(map) <- colors
+
+#Adding the colors to the antigens
+map <- setLegend(map, legend_names, colors, style.bottom = "8px", style.right = "8px")
+
+```
+
+## Viewer
+
+```{r}
+
+Racmacs::view(
+  map)
+
+```
