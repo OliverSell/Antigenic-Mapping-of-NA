@@ -65,7 +65,7 @@ ag_df <- as.data.frame(ag_coords) |>
   mutate(antigen = rownames(ag_coords),
          type = 'AG',
          antigenic_group = attr_table_ag[["Antigenic group"]],
-         serum_vaccine_homolog = attr_table_ag[["Serum vaccine homolog"]])
+         serum_exposure_homolog = attr_table_ag[["Serum vaccine homolog"]])
 
 clustering_result <- dbscan::dbscan(ag_df[, 
                                        c("V1", "V2")], 
@@ -129,14 +129,14 @@ unique_serum_exposures <- unique(attr_table_sr$"Serum exposure antigen")
 # ag_df and antigenic_group to color
 homolog_colors <- dd |> 
   filter(type == "AG") |> 
-  select(serum_vaccine_homolog, 
+  select(serum_exposure_homolog, 
          color) |>
   distinct() |>
   # Ensure there's a row for each antigenic group mentioned in attr_table_sr
-  filter(serum_vaccine_homolog %in% unique_serum_exposures)
+  filter(serum_exposure_homolog %in% unique_serum_exposures)
 
 colors_for_SR <- setNames(homolog_colors$color, 
-                          homolog_colors$serum_vaccine_homolog)
+                          homolog_colors$serum_exposure_homolog)
 
 num_clusters <- max(ag_df$cluster[ag_df$cluster > 0])
 if(num_clusters <= 8) {
