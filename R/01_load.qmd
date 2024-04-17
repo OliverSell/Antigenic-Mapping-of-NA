@@ -17,7 +17,13 @@ list.of.packages <- c("tidyverse",
                       "dbscan", 
                       "ggforce", 
                       "RColorBrewer",
-                      "rstudioapi")
+                      "rstudioapi",
+                      "fs",
+                      "readr",
+                      "pander",
+                      "gt",
+                      "DT")
+
 new.packages <- list.of.packages[!(
   list.of.packages %in% installed.packages()[
     ,"Package"
@@ -58,25 +64,7 @@ make_dir("../data/_raw")
 ## Loading excel file
 
 ```{r}
-
-# Open a file dialog for the user to select a file
-#file_path <- rstudioapi::selectFile(caption = "Select an Excel file")
-
-# Now read the selected Excel file
-#excel_data <- readxl::read_excel(file_path)
-
-  # Check if the data has been loaded correctly
-#if (!is.null(excel_data)) {
-#  message("Data loaded successfully.")
-#} else {
-#  message("Failed to load data.")
-#}
-
-
 excel_data <- read_excel("../data/_raw/acmap_NA.xlsx", na = "", skip = 0)  ## AUTOMATE
-## SPØRG MARTHA
-## SPØRG MARTHA
-## SPØRG MARTHA
 
 # If named "NA", then rename to neuraminidase
 excel_data <- excel_data %>%
@@ -93,9 +81,6 @@ write_csv(excel_data, "../data/excel_csv.csv.gz")
 #| echo: false
 #| message: false
 #| output: false
-
-## Loading titer data from pre-made csv file
-#titer_table <- read_csv2(file = "../_raw/antigenic_map_template_covid.csv")
 
 ## Loading titer data from generated csv file
 titer_table <- read_csv(file = "../data/excel_csv.csv.gz")
