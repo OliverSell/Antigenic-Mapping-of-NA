@@ -1,11 +1,9 @@
 ## Source functions
-
 ```{r}
 source("../R/99_proj_func.R")
 ```
 
 ## Loading packages
-
 ```{r}
 list.of.packages <- c("tidyverse", 
                       "readxl", 
@@ -13,7 +11,7 @@ list.of.packages <- c("tidyverse",
                       "viridis", 
                       "ggrepel", 
                       "svglite", 
-                      "knitr",  # FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX 
+                      "knitr",
                       "dbscan", 
                       "ggforce", 
                       "RColorBrewer",
@@ -32,9 +30,6 @@ new.packages <- list.of.packages[!(
 if(length(new.packages)) 
   install.packages(new.packages)
 ```
-
-
-
 ## Libraries
 
 ```{r}
@@ -46,7 +41,6 @@ if(length(new.packages))
 library("tidyverse")
 library("readxl")
 library("rstudioapi")
-
 ```
 
 # Antigenic Cartography - COVID
@@ -55,22 +49,32 @@ Antigen names; H69775 (Wuhan), Alpha (B.1.1.7), Beta (B.1.351), Gamma (P.1), Del
 
 ## Generate data directories
 ```{r}
-
 make_dir("../data")
 make_dir("../data/_raw")
-
 ```
 
 ## Loading excel file
 
 ```{r}
+# Open a file dialog for the user to select a file
+#file_path <- rstudioapi::selectFile(caption = "Select an Excel file")
+
+# Now read the selected Excel file
+#excel_data <- readxl::read_excel(file_path)
+
+  # Check if the data has been loaded correctly
+#if (!is.null(excel_data)) {
+#  message("Data loaded successfully.")
+#} else {
+#  message("Failed to load data.")
+#}
+
 excel_data <- read_excel("../data/_raw/acmap_NA.xlsx", na = "", skip = 0)  ## AUTOMATE
 
 # If named "NA", then rename to neuraminidase
 excel_data <- excel_data %>%
   mutate(across(6, ~ifelse(row_number() == 4 & .x == "NA", "neuraminidase", .x))) |>
   mutate(across(where(is.character), ~na_if(.x, "NA")))
-
 
 write_csv(excel_data, "../data/excel_csv.csv.gz")
 ```
@@ -84,15 +88,11 @@ write_csv(excel_data, "../data/excel_csv.csv.gz")
 
 ## Loading titer data from generated csv file
 titer_table <- read_csv(file = "../data/excel_csv.csv.gz")
-
-
 ```
 
 ## Writing files
 ```{r}
-
 ## Writing titer file
 write_tsv(titer_table,
             file = "../data/titer_dirty.tsv.gz")
-
 ```
