@@ -1,6 +1,6 @@
 ---
 title: "Antigenic mapping report"
-author: "Magnus Hilarius Ohline Jepsen and Oliver Sellberg"
+author: "Magnus Hilarius Ohlin Jepsen and Oliver Sellberg"
 date: today
 date-format: "DD/MM/YYYY"
 
