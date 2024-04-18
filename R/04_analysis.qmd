@@ -65,7 +65,7 @@ ag_df <- as.data.frame(ag_coords) |>
   mutate(antigen = rownames(ag_coords),
          type = 'AG',
          antigenic_group = attr_table_ag[["Antigenic group"]],
-         serum_exposure_homolog = attr_table_ag[["Serum vaccine homolog"]])
+         serum_exposure_homolog = attr_table_ag[["Serum exposure homolog"]])
 
 clustering_result <- dbscan::dbscan(ag_df[, 
                                        c("V1", "V2")], 
