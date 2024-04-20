@@ -35,6 +35,7 @@ map <- read.acmap(
   align_optimizations = FALSE
 )
 
+# Attribute tables
 attr_table_ag <- read_tsv(file = "../data/attr_table_ag.tsv")
 attr_table_sr <- read_tsv(file = "../data/attr_table_sr.tsv")
 table_info <- read_tsv(file = "../data/table_info.tsv")
