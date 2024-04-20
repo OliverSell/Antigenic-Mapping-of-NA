@@ -125,13 +125,17 @@ homolog_colors <- dd |>
 colors_for_SR <- setNames(homolog_colors$color, 
                           homolog_colors$serum_exposure_homolog)
 
+
+library("dbscan")
+library("ggforce")
+library("RColorBrewer")
 ### Clustering (Futute Perspectives)
 num_clusters <- max(ag_df$cluster[ag_df$cluster > 0])
 if(num_clusters <= 8) {
-  cluster_colors <- brewer.pal(num_clusters, "Dark2")
+  cluster_colors <- RColorBrewer::brewer.pal(num_clusters, "Dark2")
 } else {
   # More than 8 clusters
-  cluster_colors <- rep(brewer.pal(8, "Dark2"), # repeating palette
+  cluster_colors <- rep(RColorBrewer::brewer.pal(8, "Dark2"), # repeating palette
                         length.out = num_clusters)
 }
 if (!is.null(num_clusters) && length(num_clusters) > 0 && num_clusters > 0) {

@@ -13,7 +13,10 @@ list.of.packages <- c("tidyverse",
                       "knitr",
                       "rstudioapi", 
                       "kableExtra",
-                      "tinytex")
+                      "tinytex",
+                      "dbscan", #Future perspectives
+                      "ggforce",
+                      "RColorBrewer")
 
 new.packages <- list.of.packages[!(
   list.of.packages %in% installed.packages()[
@@ -55,19 +58,19 @@ make_dir("../data/_raw")
 
 ```{r}
 # Open a file dialog for the user to select a file
-#file_path <- rstudioapi::selectFile(caption = "Select an Excel file")
+file_path <- rstudioapi::selectFile(caption = "Select an Excel file")
 
 # Now read the selected Excel file
-#excel_data <- readxl::read_excel(file_path)
+excel_data <- readxl::read_excel(file_path)
 
   # Check if the data has been loaded correctly
-#if (!is.null(excel_data)) {
-#  message("Data loaded successfully.")
-#} else {
-#  message("Failed to load data.")
-#}
+if (!is.null(excel_data)) {
+  message("Data loaded successfully.")
+} else {
+  message("Failed to load data.")
+}
 
-excel_data <- read_excel("../data/_raw/acmap_NA.xlsx", na = "", skip = 0)  ## AUTOMATE
+#excel_data <- read_excel("../data/_raw/acmap_NA.xlsx", na = "", skip = 0)  ## AUTOMATE
 
 # If named "NA", then rename to neuraminidase
 excel_data <- excel_data %>%
