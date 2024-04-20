@@ -12,7 +12,6 @@ format:
 ---
 
 # Antigenic mapping
-
 ```{r setup, include=FALSE}
 source("../R/99_proj_func.R")
 
@@ -48,21 +47,16 @@ latest_folder_path <- get_latest_version_folder(base_path, folder_prefix, today_
 ## Data information
 
 ### **First 5 rows and columns of titer table**
-
 ```{r, echo = FALSE}
-
 titer_clean |> 
   head(5) |> 
   select(1:5) |> 
   kable()
-
 ```
 
 ### **Information about the dataset**
-
 ```{r, echo = FALSE}
 knitr::kable(table_info)
-
 ```
 
 ### **Antigen attribute table**
@@ -81,28 +75,22 @@ attr_table_sr |>
   kable()
 ```
 
-
-
 \vspace{10pt}
 
 ## Mapping
 
 ### Antigenic map - colored by type - with legend
-
 ```{r, echo = FALSE}
 # Include graphic for antigenic map colored by type - with legend
 file_path_type_legend <- file.path(latest_folder_path, paste0("ac_map_",virus_in_use, "_", today_date, ".jpg"))
 knitr::include_graphics(file_path_type_legend)
-
 ```
 
 ### Antigenic map - colored by type - with labels
-
 ```{r, echo = FALSE}
 # Include graphic for antigenic map colored by type - with labels
 file_path_type_labels <- file.path(latest_folder_path, paste0("ac_map_",virus_in_use, "_", today_date, "_label.jpg"))
 knitr::include_graphics(file_path_type_labels)
-
 ```
 
 ### Antigenic map - colored by antigenic group - with legend
@@ -111,23 +99,18 @@ knitr::include_graphics(file_path_type_labels)
 # Include graphic for antigenic map colored by antigenic group - with legend
 file_path_group_legend <- file.path(latest_folder_path, paste0("ac_map_",virus_in_use, "_", today_date, "_grouped.jpg"))
 knitr::include_graphics(file_path_group_legend)
-
 ```
 
 ### Antigenic map - colored by antigenic group - with labels
-
 ```{r, echo = FALSE}
 # Include graphic for antigenic map colored by antigenic group - with labels
 file_path_group_labels <- file.path(latest_folder_path, paste0("ac_map_",virus_in_use, "_",today_date, "_grouped_label.jpg"))
 knitr::include_graphics(file_path_group_labels)
-
 ```
 
 ### Antigenic map blank
-
 ```{r, echo = FALSE}
 # Include graphic for blank antigenic map
 file_path_blank <- file.path(latest_folder_path, paste0("ac_map_",virus_in_use, "_", today_date, "_plain.jpg"))
 knitr::include_graphics(file_path_blank)
-
 ```
