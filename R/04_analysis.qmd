@@ -21,9 +21,6 @@ library("Racmacs")
 library("viridis")
 library("ggrepel")
 library("svglite")
-library("ggforce")
-library("dbscan")
-library("RColorBrewer")
 ```
 
 ### Loading
@@ -57,6 +54,9 @@ ag_df <- as.data.frame(ag_coords) |>
          serum_exposure_homolog = attr_table_ag[["Serum exposure homolog"]])
 
 ### Clustering (Futute Perspectives)
+library("dbscan")
+library("ggforce")
+library("RColorBrewer")
 clustering_result <- dbscan::dbscan(
   ag_df[, c("V1", "V2")],
   eps = 0.7, # the maximum distance between two samples for one to be considered in the neighborhood
