@@ -21,9 +21,7 @@ library("Racmacs")
 library("viridis")
 library("ggrepel")
 library("svglite")
-library("ggforce")
-library("dbscan")
-library("RColorBrewer")
+
 ```
 
 ### Loading

@@ -6,21 +6,13 @@ source("../R/99_proj_func.R")
 ## Loading packages
 ```{r}
 list.of.packages <- c("tidyverse", 
-                      "readxl", 
                       "Racmacs", 
                       "viridis", 
                       "ggrepel", 
                       "svglite", 
                       "knitr",
-                      "dbscan", 
-                      "ggforce", 
-                      "RColorBrewer",
-                      "rstudioapi",
-                      "fs",
-                      "readr",
-                      "pander",
-                      "gt",
-                      "DT",
+                      "rstudioapi", 
+                      "kableExtra",
                       "tinytex")
 
 new.packages <- list.of.packages[!(
