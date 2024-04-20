@@ -6,13 +6,11 @@ author: authors
 ---
 
 ### Source functions
-
 ```{r}
 source("../R/99_proj_func.R")
 ```
 
 ### Library
-
 ```{r}
 #| eval: true
 #| echo: true
@@ -26,13 +24,9 @@ library("svglite")
 library("ggforce")
 library("dbscan")
 library("RColorBrewer")
-
-
-
 ```
 
 ### Loading
-
 ```{r}
 file_path <- file.path(getwd(), "../data/map.ace")
 
@@ -46,15 +40,10 @@ map <- read.acmap(
 attr_table_ag <- read_tsv(file = "../data/attr_table_ag.tsv")
 attr_table_sr <- read_tsv(file = "../data/attr_table_sr.tsv")
 table_info <- read_tsv(file = "../data/table_info.tsv")
-
-
 ```
 
-
-### Extracting information and creating colors
-
+## Extracting information and creating colors
 ```{r}
-
 ag_coords <- agCoords(map)  # Antigen coordinates
 sr_coords <- srCoords(map)  # Serum coordinates
 
@@ -67,17 +56,16 @@ ag_df <- as.data.frame(ag_coords) |>
          antigenic_group = attr_table_ag[["Antigenic group"]],
          serum_exposure_homolog = attr_table_ag[["Serum exposure homolog"]])
 
-clustering_result <- dbscan::dbscan(ag_df[, 
-                                       c("V1", "V2")], 
-                                    eps = 0.7, # the maximum distance between two samples for one to be considered in the neighborhood
-                                    minPts = 2) # number of samples in a neighborhood for a point to be considered a core point
-
-
+### Clustering (Futute Perspectives)
+clustering_result <- dbscan::dbscan(
+  ag_df[, c("V1", "V2")],
+  eps = 0.7, # the maximum distance between two samples for one to be considered in the neighborhood
+  minPts = 2) # number of samples in a neighborhood for a point to be considered a core point
 
 ag_df <- ag_df |> 
   mutate(cluster = clustering_result$cluster)
 
-
+# Combine ag and sr continued
 sr_df <- as.data.frame(sr_coords) |>
   mutate(serum = rownames(sr_coords),
          type = 'SR')
@@ -138,6 +126,7 @@ homolog_colors <- dd |>
 colors_for_SR <- setNames(homolog_colors$color, 
                           homolog_colors$serum_exposure_homolog)
 
+### Clustering (Futute Perspectives)
 num_clusters <- max(ag_df$cluster[ag_df$cluster > 0])
 if(num_clusters <= 8) {
   cluster_colors <- brewer.pal(num_clusters, "Dark2")
@@ -146,21 +135,17 @@ if(num_clusters <= 8) {
   cluster_colors <- rep(brewer.pal(8, "Dark2"), # repeating palette
                         length.out = num_clusters)
 }
- 
 if (!is.null(num_clusters) && length(num_clusters) > 0 && num_clusters > 0) {
   names(cluster_colors) <- as.character(seq_len(num_clusters))
 }
 
-combined_colors <- c(cluster_colors, 
+combined_colors <- c(cluster_colors, # Clustering (Futute Perspectives)
                      colors_for_AG, 
                      colors_for_SR, 
                      "Other" = "grey")
-
-
-
 ```
 
-Antigenic Mapping
+## base_map
 ```{r}
 ############################
 # Generating Antigenic Map #
@@ -219,12 +204,9 @@ base_map <- ggplot(dd) +
         plot.title.position = "plot",
         legend.margin= margin(l = 10, unit = "pt"),
         legend.position = "right")
-
-##############################
-
 ```
 
-
+## Legend plot
 ```{r}
 ##########
 # Legend #
@@ -237,14 +219,9 @@ ag_map_1 <- base_map +
   guides(fill = guide_legend(override.aes = list(size = 3)), 
          shape = "none", size = "none",
          color = guide_legend(override.aes = list(size = 2, stroke = 0.8)))
-  
-
 ```
 
-
-
-Label plot
-
+## Label plot
 ```{r}
 ##########
 # Labels #
@@ -279,7 +256,6 @@ ag_map_2 <- base_map +
 ```
 
 ## Plain plot
-
 ```{r}
 ##########
 # Plain  #
@@ -319,11 +295,11 @@ ag_groups_with_multiple_entries <- ag_counts |>
 dd_multiple_entries <- dd |>
   filter(antigenic_group %in% ag_groups_with_multiple_entries)
 
-# FIX FIX FIX FIX
-dd_cluster <- dd |> # FIX FIX FIX FIX
-  filter(type == "AG") |> # FIX FIX FIX FIX
-  filter(cluster != 0) # FIX FIX FIX FIX
-# FIX FIX FIX FIX
+### Clustering (Futute Perspectives)
+dd_cluster <- dd |> 
+  filter(type == "AG") |> 
+  filter(cluster != 0) 
+
 
 ag_map_5 <- base_map +
   geom_point(data = filter(dd, 
@@ -371,31 +347,6 @@ folder_name <- paste0("../results/ac_map_",
                       table_info |>
                           pull(virus_type) , 
                       "_", Sys.Date())
-##################################
-# Add version_1
-# Add version_2
-# Add version_3
-# Add version_4
-# Add version_5
-##################################
-# Add version_1
-# Add version_2
-# Add version_3
-# Add version_4
-# Add version_5
-##################################
-# Add version_1
-# Add version_2
-# Add version_3
-# Add version_4
-# Add version_5
-##################################
-# Add version_1
-# Add version_2
-# Add version_3
-# Add version_4
-# Add version_5
-##################################
 
 make_dir(folder_name)
 
@@ -499,7 +450,7 @@ ggsave(
   units = "cm",
 )
 
-# Save the plot as TIFF
+## TIFF
 ggsave(
   plot = ag_map_1,
   filename = paste0(base_filename, ".tiff"),
@@ -552,4 +503,3 @@ ggsave(
   units = "cm",
 )
 ```
-
