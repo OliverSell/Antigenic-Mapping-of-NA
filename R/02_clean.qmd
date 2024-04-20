@@ -1,25 +1,18 @@
 ## Source functions
-
 ```{r}
 source("../R/99_proj_func.R")
 ```
 
 ## Libraries:
-
 ```{r}
 #| message: false
 #| warning: false
-## ASK MARTHA
-## ASK MARTHA
-## ASK MARTHA
 
 library("tidyverse")
-#library("dplyr") #SLET
 library("Racmacs")
 ```
 
 ## Load data
-
 ```{r}
 #| message: false
 #| warning: false
@@ -27,7 +20,6 @@ titer_table <- read_tsv("../data/titer_dirty.tsv.gz")
 ```
 
 ## Data wrangling
-
 ```{r}
 #| warning: false
 ########################
@@ -62,18 +54,19 @@ titer_clean <- t(titer_dirty)
 #Getting data ready for mapping
 titer_clean <- titer_clean |> 
   as.data.frame() |> 
-  mutate(across(everything(), ~replace_na(.x, "*"))) # Pseudo counts? then == 1
+  mutate(across(everything(), ~replace_na(.x, "*"))) 
 
 #Defining the amount of sera and antigen
 antigen_sera_n <- ncol(titer_clean)
 virus_strains_n <- nrow(titer_clean)
 
-#
+# defining antigens in use
 ag_names <- rownames(titer_clean) |> as_data_frame()
 
 #######################
 ### Attribute Table ###
 #######################
+# Serum attributes
 attr_table_sr <- titer_table |>
   slice(-(1:7)) |> #1:7 covid
   slice_head(n = 3) |> #2 covid
@@ -85,6 +78,7 @@ attr_table_sr <- titer_table |>
   rename_with( ~ gsub(":", "", .x)) |> 
   mutate(sera_name_with_DPI = paste(`Serum IDs`, `Serum DPI`, sep = "_"))
 
+# Antigen attributes
 attr_table_ag <- titer_table |> 
   slice(-(1:10)) |> 
   t() |> 
@@ -96,9 +90,7 @@ attr_table_ag <- titer_table |>
   set_colnames_from_row(row_number = 1) |> 
   rename_with( ~ gsub(":", "", .x))
   
-  
-  
-## Table information
+# Table information
 table_info <- tibble(
   virus_type = as.character(titer_table[2, 6]),
   assay_type = as.character(titer_table[2, 8]),
@@ -107,14 +99,11 @@ table_info <- tibble(
   antigen_sera_n = antigen_sera_n,
   virus_strains_n = virus_strains_n
 )
-
-
 ```
 
 ## Writing files 
 
 ```{r}
-
 write_tsv(table_info,
             file = "../data/table_info.tsv")
 
@@ -129,6 +118,5 @@ write_tsv(titer_clean,
 
 write_tsv(ag_names,
             file = "../data/ag_names.tsv")
-
 ```
 
