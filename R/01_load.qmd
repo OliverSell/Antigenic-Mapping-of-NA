@@ -73,7 +73,7 @@ if (!is.null(excel_data)) {
 #excel_data <- read_excel("../data/_raw/acmap_NA.xlsx", na = "", skip = 0)  ## AUTOMATE
 
 # If named "NA", then rename to neuraminidase
-excel_data <- excel_data %>%
+excel_data <- excel_data |>
   mutate(across(6, ~ifelse(row_number() == 4 & .x == "NA", "neuraminidase", .x))) |>
   mutate(across(where(is.character), ~na_if(.x, "NA")))
 
