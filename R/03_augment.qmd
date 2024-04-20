@@ -24,13 +24,11 @@ library("Racmacs")
 ### Loading
 
 ```{r}
-
 ag_names <- read_tsv(file = "../data/ag_names.tsv")
 titer_clean <- read_tsv(file = "../data/titer_clean.tsv")
 titer_clean <- as.data.frame(titer_clean)
 ag_names <- ag_names[["value"]]
 row.names(titer_clean) <- ag_names
-
 ```
 
 ### Augment
@@ -56,18 +54,11 @@ map <- optimizeMap(
   minimum_column_basis    = "none",
   options = list(ignore_disconnected = TRUE)
 )
-
-
-
-#### UNCERTAINTY
-#### UNCERTAINTY
-
 ```
 
 ### map file
 
 ```{r}
-
 # Define the path to the 'results' directory relative to the 'R' directory
 results_directory <- file.path(getwd(), "../data")
 
@@ -78,5 +69,4 @@ file_path <- file.path("../data", custom_filename)
 save.acmap(
   map,
   file_path)
-
 ```
