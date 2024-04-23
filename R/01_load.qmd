@@ -17,7 +17,7 @@ list.of.packages <- c("tidyverse",
                       "dbscan", #Future perspectives
                       "ggforce",
                       "RColorBrewer",
-                      "fs")
+                      )
 
 new.packages <- list.of.packages[!(
   list.of.packages %in% installed.packages()[

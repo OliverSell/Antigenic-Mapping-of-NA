@@ -15,10 +15,10 @@ format:
 ```{r setup, include=FALSE}
 source("../R/99_proj_func.R")
 
-library("fs")
 library("knitr")
 library("readr")
 library("dplyr")
+library("kableExtra")
 
 table_info <- read_tsv(file = "../data/table_info.tsv")
 titer_clean <- read_tsv(file = "../data/titer_clean.tsv")
@@ -61,9 +61,15 @@ knitr::kable(table_info)
 ### **Antigen attribute table**
 First 5 rows of the antigen attribute table
 ```{r, echo = FALSE}
-attr_table_ag |> 
-  head(5) |> 
-  kable()
+attr_table_ag |>
+  head(5) |>
+  kable("latex", booktabs = TRUE, escape = FALSE) |>
+  kable_styling(full_width = FALSE) |>
+  column_spec(1, width = "2cm") |>
+  column_spec(2, width = "4.5cm") |>
+  column_spec(3, width = "2cm") |>
+  column_spec(4, width = "2cm") |>
+  column_spec(5, width = "1.5cm")
 ```   
 
 ### **Serum attribute table**
