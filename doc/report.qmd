@@ -43,11 +43,17 @@ latest_folder_path <- get_latest_version_folder(base_path, folder_prefix, today_
 ## Data information
 
 ### **First 5 rows and columns of titer table**
-```{r, echo = FALSE}
-titer_clean |> 
-  head(5) |> 
-  select(1:5) |> 
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+# Apply rounding to both numeric and character columns appropriately
+titer_clean |>
+  head(5) |>
+  select(1:5) |>
+  mutate(
+    across(where(is.numeric), ~ round(., digits = 2)),  # Round numeric columns
+    across(where(is.character), convert_and_round_char)  # Convert and round character columns conditionally
+  ) |>
   kable()
+
 ```
 
 ### **Information about the dataset**

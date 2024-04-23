@@ -90,3 +90,11 @@ get_latest_version_folder <- function(base_path, folder_prefix, date) {
   
   return(latest_folder)
 }
+
+#Function for report.qmd rounding up tables. Some values are numeric, charecters or <16. This function finds a way around that
+convert_and_round_char <- function(x) {
+  # Check if the string is numeric (no special characters like "<")
+  if_else(grepl("^[0-9.]+$", x), 
+          as.character(round(as.numeric(x), digits = 2)), 
+          x)
+}
