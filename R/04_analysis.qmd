@@ -21,6 +21,7 @@ library("Racmacs")
 library("viridis")
 library("ggrepel")
 library("svglite")
+library("fs")
 
 ```
 
@@ -346,25 +347,21 @@ Saving the relevant plots
 ############################
 # Save the map (.svg.tiff) #
 ############################
-folder_name <- paste0("../results/ac_map_", 
-                      table_info |>
-                          pull(virus_type) , 
-                      "_", Sys.Date())
-
-make_dir(folder_name)
-
 base_filename <- paste0("ac_map_", 
                         table_info |>
                           pull(virus_type), 
                         "_", Sys.Date())
-write_tsv(dd,
-            file = "../data/dd.tsv")
+
+base_folder_path <- "../results"
+folder_name <- paste0("ac_map_", table_info |> pull(virus_type), "_", Sys.Date())
+final_folder_path <- create_unique_folder(base_folder_path, folder_name)
+
 
 ## JPG
 ggsave(
   plot = ag_map_1,
   filename = paste0(base_filename, ".jpg"),
-  path = folder_name,
+  path = final_folder_path,
   device = "jpg",
   width = 20,
   height = 12,
@@ -373,7 +370,7 @@ ggsave(
 ggsave(
   plot = ag_map_2,
   filename = paste0(base_filename,"_label", ".jpg"),
-  path = folder_name,
+  path = final_folder_path,
   device = "jpg",
   width = 20,
   height = 12,
@@ -382,7 +379,7 @@ ggsave(
 ggsave(
   plot = ag_map_3,
   filename = paste0(base_filename,"_plain", ".jpg"),
-  path = folder_name,
+  path = final_folder_path,
   device = "jpg",
   width = 20,
   height = 12,
@@ -391,7 +388,7 @@ ggsave(
 ggsave(
   plot = ag_map_4,
   filename = paste0(base_filename,"_grouped", ".jpg"),
-  path = folder_name,
+  path = final_folder_path,
   device = "jpg",
   width = 20,
   height = 12,
@@ -400,7 +397,7 @@ ggsave(
 ggsave(
   plot = ag_map_5,
   filename = paste0(base_filename,"_grouped_label", ".jpg"),
-  path = folder_name,
+  path = final_folder_path,
   device = "jpg",
   width = 20,
   height = 12,
@@ -410,7 +407,7 @@ ggsave(
 ggsave(
   plot = ag_map_1,
   filename = paste0(base_filename, ".svg"),
-  path = folder_name,
+  path = final_folder_path,
   device = "svg",
   width = 20,
   height = 12,
@@ -419,7 +416,7 @@ ggsave(
 ggsave(
   plot = ag_map_2,
   filename = paste0(base_filename,"_label", ".svg"),
-  path = folder_name,
+  path = final_folder_path,
   device = "svg",
   width = 20,
   height = 12,
@@ -428,7 +425,7 @@ ggsave(
 ggsave(
   plot = ag_map_3,
   filename = paste0(base_filename,"_plain", ".svg"),
-  path = folder_name,
+  path = final_folder_path,
   device = "svg",
   width = 20,
   height = 12,
@@ -437,7 +434,7 @@ ggsave(
 ggsave(
   plot = ag_map_4,
   filename = paste0(base_filename,"_grouped", ".svg"),
-  path = folder_name,
+  path = final_folder_path,
   device = "svg",
   width = 20,
   height = 12,
@@ -446,7 +443,7 @@ ggsave(
 ggsave(
   plot = ag_map_5,
   filename = paste0(base_filename,"_grouped_label", ".svg"),
-  path = folder_name,
+  path = final_folder_path,
   device = "svg",
   width = 20,
   height = 12,
@@ -457,7 +454,7 @@ ggsave(
 ggsave(
   plot = ag_map_1,
   filename = paste0(base_filename, ".tiff"),
-  path = folder_name,
+  path = final_folder_path,
   device = "tiff",
   dpi = 300, # Set the desired resolution
   width = 20,
@@ -468,7 +465,7 @@ ggsave(
 ggsave(
   plot = ag_map_2,
   filename = paste0(base_filename,"_label", ".tiff"),
-  path = folder_name,
+  path = final_folder_path,
   device = "tiff",
   dpi = 300, # Set the desired resolution
   width = 20,
@@ -478,7 +475,7 @@ ggsave(
 ggsave(
   plot = ag_map_3,
   filename = paste0(base_filename,"_plain", ".tiff"),
-  path = folder_name,
+  path = final_folder_path,
   device = "tiff",
   dpi = 300, # Set the desired resolution
   width = 20,
@@ -488,7 +485,7 @@ ggsave(
 ggsave(
   plot = ag_map_4,
   filename = paste0(base_filename,"_grouped", ".tiff"),
-  path = folder_name,
+  path = final_folder_path,
   device = "tiff",
   dpi = 300, # Set the desired resolution
   width = 20,
@@ -498,7 +495,7 @@ ggsave(
 ggsave(
   plot = ag_map_5,
   filename = paste0(base_filename,"_grouped_label", ".tiff"),
-  path = folder_name,
+  path = final_folder_path,
   device = "tiff",
   dpi = 300, # Set the desired resolution
   width = 20,

@@ -1,3 +1,6 @@
+library("fs")
+library("stringr")
+
 make_dir <- function(path){
   if( !dir.exists(path) ){
     dir.create(path)
@@ -36,4 +39,54 @@ get_latest_version_folder <- function(base_path, folder_prefix, date) {
   } else {
     stop("No matching folders found.")
   }
+}
+
+# Function to create a unique directory
+create_unique_folder <- function(base_path, folder_name) {
+  # Initialize the full path
+  full_path <- file.path(base_path, folder_name)
+  
+  # Check if the directory already exists
+  if (dir_exists(full_path)) {
+    suffix <- 2  # Start suffix from 2
+    # Continue searching for a non-existing directory
+    repeat {
+      new_folder_name <- paste0(folder_name, "_v", suffix)
+      full_path <- file.path(base_path, new_folder_name)
+      if (!dir_exists(full_path)) {
+        folder_name <- new_folder_name
+        break
+      }
+      suffix <- suffix + 1
+    }
+  }
+  
+  # Create the directory
+  dir_create(full_path)
+  
+  # Return the final path of the created directory
+  return(full_path)
+}
+
+get_latest_version_folder <- function(base_path, folder_prefix, date) {
+  # Construct the search pattern to match folders for the given date
+  search_pattern <- paste0(folder_prefix, date, "(|_v[0-9]+)$")
+  
+  # List all folders in the base path
+  all_folders <- dir_ls(base_path, type = "directory")
+  
+  # Filter folders based on the search pattern
+  date_folders <- all_folders[grepl(search_pattern, basename(all_folders))]
+  
+  # Extract version numbers and find the highest one
+  if (length(date_folders) > 0) {
+    # Sort date_folders by natural order to get the latest
+    sorted_folders <- sort(date_folders, decreasing = TRUE)
+    latest_folder <- sorted_folders[1]
+  } else {
+    latest_folder <- NA
+    warning("No matching folders found for the specified date and virus type.")
+  }
+  
+  return(latest_folder)
 }
