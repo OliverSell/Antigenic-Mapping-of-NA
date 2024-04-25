@@ -27,18 +27,18 @@ titer_table <- read_tsv("../data/titer_dirty.tsv.gz")
 ########################
 titer_dirty <- titer_table |>
   # Remove first with meta data.
-  slice(-(1:11)) |>  #1:10 covid
+  slice(-(1:11)) |>  
   t() |> 
   as_tibble(rownames = NA) |> 
-  slice(-(1:7)) |> # 1:6 covid
+  slice(-(1:7)) |> 
   set_colnames_from_row(row_number = 1) |> 
   as.data.frame()
 
 #Fetches the names of the sera
 sera_names <- titer_table |>
-  slice(-(1:7)) |> #1:8 covid
+  slice(-(1:7)) |> 
   #head(1) |> 
-  select(-(1:7)) |> #1:7 covid
+  select(-(1:7)) |> 
   slice(1:3) |>
   t() |>
   as.tibble() |>
@@ -68,11 +68,11 @@ ag_names <- rownames(titer_clean) |> as_data_frame()
 #######################
 # Serum attributes
 attr_table_sr <- titer_table |>
-  slice(-(1:7)) |> #1:7 covid
-  slice_head(n = 3) |> #2 covid
+  slice(-(1:7)) |> 
+  slice_head(n = 3) |> 
   t() |> 
   as_tibble() |> 
-  slice(-(1:7)) |> #1:6 covid
+  slice(-(1:7)) |> 
   set_colnames_from_row(row_number = 1) |> 
   #Removing semicolon from names
   rename_with( ~ gsub(":", "", .x)) |> 
