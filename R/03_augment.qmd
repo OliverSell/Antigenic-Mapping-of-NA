@@ -50,11 +50,10 @@ map <- acmap(
 # Map optimizations
 map <- optimizeMap(
   map,
-  number_of_dimensions    = 2,         # 2D map
-  number_of_optimizations = 10000,     # Others uses 1000.
+  number_of_dimensions    = 2,        # 2D map
+  number_of_optimizations = 1000,
   minimum_column_basis    = "none",
-  options = list(ignore_disconnected = TRUE)
-)
+  options = list(ignore_disconnected = TRUE))
 ```
 
 ### map file
