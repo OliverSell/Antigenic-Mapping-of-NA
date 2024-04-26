@@ -12,22 +12,16 @@ check_empty <- function(column) {
   return(empty_count >= 0.8 * length(column))
 }
 
-
+# Rename columns to a row
 set_colnames_from_row <- function(tbl, row_number = 1) {
-  # Check if the specified row number is within the number of rows in the table
   if(row_number > nrow(tbl) | row_number < 1) {
     stop("The specified row number is out of bounds.")
   }
-  # Set column names from the specified row
   colnames(tbl) <- as.character(unlist(tbl[row_number, ]))
-  #colnames(tbl) <- paste0("Col",as.character(unlist(tbl[row_number, ])))
-  
   # Remove the row that was used for column names
   tbl <- tbl[-row_number, ]
-  
   return(tbl)
 }
-
 
 get_latest_version_folder <- function(base_path, folder_prefix, date) {
   potential_folders <- c(paste0(folder_prefix, date), paste0(folder_prefix, date, "_v", 1:100))
@@ -41,15 +35,14 @@ get_latest_version_folder <- function(base_path, folder_prefix, date) {
   }
 }
 
-# Function to create a unique directory
+# Create a unique directory
 create_unique_folder <- function(base_path, folder_name) {
-  # Initialize the full path
   full_path <- file.path(base_path, folder_name)
   
   # Check if the directory already exists
   if (dir_exists(full_path)) {
-    suffix <- 2  # Start suffix from 2
-    # Continue searching for a non-existing directory
+    suffix <- 2                            # Start suffix from 2
+
     repeat {
       new_folder_name <- paste0(folder_name, "_v", suffix)
       full_path <- file.path(base_path, new_folder_name)
@@ -60,27 +53,22 @@ create_unique_folder <- function(base_path, folder_name) {
       suffix <- suffix + 1
     }
   }
-  
   # Create the directory
   dir_create(full_path)
   
-  # Return the final path of the created directory
   return(full_path)
 }
 
 get_latest_version_folder <- function(base_path, folder_prefix, date) {
-  # Construct the search pattern to match folders for the given date
+  # Match folders with date
   search_pattern <- paste0(folder_prefix, date, "(|_v[0-9]+)$")
   
-  # List all folders in the base path
-  all_folders <- dir_ls(base_path, type = "directory")
-  
   # Filter folders based on the search pattern
+  all_folders <- dir_ls(base_path, type = "directory")
   date_folders <- all_folders[grepl(search_pattern, basename(all_folders))]
   
-  # Extract version numbers and find the highest one
+  # Find latest version 
   if (length(date_folders) > 0) {
-    # Sort date_folders by natural order to get the latest
     sorted_folders <- sort(date_folders, decreasing = TRUE)
     latest_folder <- sorted_folders[1]
   } else {
@@ -91,9 +79,10 @@ get_latest_version_folder <- function(base_path, folder_prefix, date) {
   return(latest_folder)
 }
 
-#Function for report.qmd rounding up tables. Some values are numeric, charecters or <16. This function finds a way around that
+# Round up values in report_tables. 
+### Some values are numeric, charecters or <16. This function finds a way around that.
 convert_and_round_char <- function(x) {
-  # Check if the string is numeric (no special characters like "<")
+  # Check if the string is numeric
   if_else(grepl("^[0-9.]+$", x), 
           as.character(round(as.numeric(x), digits = 2)), 
           x)
