@@ -5,9 +5,9 @@
 ################
 library("quarto")
 
-quarto::quarto_render("02_clean.qmd")
-quarto::quarto_render("03_augment.qmd")
-quarto::quarto_render("04_analysis.qmd")
-quarto::quarto_render("../doc/report.qmd")
+quarto::quarto_render("02_clean.qmd")       # Run data wrangling
+quarto::quarto_render("03_augment.qmd")     # Run data augmentation
+quarto::quarto_render("04_analysis.qmd")    # Run map visualization and generation
+quarto::quarto_render("../doc/report.qmd")  # Render the PDF report
 
 ```
