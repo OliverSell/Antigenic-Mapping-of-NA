@@ -37,7 +37,6 @@ titer_dirty <- titer_table |>
 #Fetches the names of the sera
 sera_names <- titer_table |>
   slice(-(1:7)) |> 
-  #head(1) |> 
   select(-(1:7)) |> 
   slice(1:3) |>
   t() |>
@@ -104,6 +103,7 @@ table_info <- tibble(
 ## Writing files 
 
 ```{r}
+## Writing TSV files
 write_tsv(table_info,
             file = "../data/table_info.tsv")
 
