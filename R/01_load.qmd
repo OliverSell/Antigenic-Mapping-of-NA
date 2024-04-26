@@ -16,9 +16,8 @@ list.of.packages <- c("tidyverse",
                       "tinytex",
                       "dbscan", #Future perspectives
                       "ggforce",
-                      "RColorBrewer",
+                      "RColorBrewer"
                       )
-
 new.packages <- list.of.packages[!(
   list.of.packages %in% installed.packages()[
     ,"Package"
@@ -26,11 +25,13 @@ new.packages <- list.of.packages[!(
   )]
 if(length(new.packages)) 
   install.packages(new.packages)
-
+# Special handling for tinytex if not installed
 if (!tinytex::is_tinytex()) {
   tinytex::install_tinytex()
 }
-
+############################################################################################################
+# We are aware that this code may not install all packages, but only the first one if multiple are abscent.#
+############################################################################################################
 ```
 ## Libraries
 
@@ -58,29 +59,27 @@ make_dir("../data/_raw")
 ## Loading excel file
 
 ```{r}
-# Open a file dialog for the user to select a file
+# File chooser
 file_path <- rstudioapi::selectFile(caption = "Select an Excel file")
 
-# Now read the selected Excel file
+# Read excel file
 excel_data <- readxl::read_excel(file_path)
 
-  # Check if the data has been loaded correctly
+  # Check succesful load
 if (!is.null(excel_data)) {
   message("Data loaded successfully.")
 } else {
   message("Failed to load data.")
 }
 
-#excel_data <- read_excel("../data/_raw/acmap_NA.xlsx", na = "", skip = 0)  ## AUTOMATE
-
 # If named "NA", then rename to neuraminidase
 excel_data <- excel_data |>
   mutate(across(6, ~ifelse(row_number() == 4 & .x == "NA", "neuraminidase", .x))) |>
   mutate(across(where(is.character), ~na_if(.x, "NA")))
 
+## Write csv excel_data file
 write_csv(excel_data, "../data/excel_csv.csv.gz")
 ```
-
 
 ## Loading data
 ```{r}
@@ -88,13 +87,13 @@ write_csv(excel_data, "../data/excel_csv.csv.gz")
 #| message: false
 #| output: false
 
-## Loading titer data from generated csv file
+## Load csv titer_table file
 titer_table <- read_csv(file = "../data/excel_csv.csv.gz")
 ```
 
 ## Writing files
 ```{r}
-## Writing titer file
+## Write tsv titer_table file
 write_tsv(titer_table,
             file = "../data/titer_dirty.tsv.gz")
 ```
