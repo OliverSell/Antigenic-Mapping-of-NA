@@ -1,5 +1,8 @@
 
 ```{r}
+################
+# Run pipeline #
+################
 library("quarto")
 
 quarto::quarto_render("02_clean.qmd")
