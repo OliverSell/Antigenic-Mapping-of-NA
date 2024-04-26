@@ -29,7 +29,7 @@ attr_table_sr <- read_tsv(file = "../data/attr_table_sr.tsv")
 
 # Base path and initial folder name components
 base_path <- "../results"
-virus_in_use <- table_info |> pull(virus_type)  # pulling virus type from table_info
+virus_in_use <- table_info |> pull(virus_type)         # pulling virus type from table_info
 folder_prefix <- paste0("ac_map_", virus_in_use, "_")  # Concatenates the base folder name with the virus type
 today_date <- format(Sys.Date(), "%Y-%m-%d")
 
@@ -46,7 +46,7 @@ titer_clean |>
   head(5) |>
   select(1:5) |>
   mutate(
-    across(where(is.numeric), ~ round(., digits = 2)),  # Round numeric columns
+    across(where(is.numeric), ~ round(., digits = 2)),   # Round numeric columns
     across(where(is.character), convert_and_round_char)  # Convert and round character columns conditionally
   ) |>
   kable()
@@ -65,6 +65,7 @@ attr_table_ag |>
   head(5) |>
   kable("latex", booktabs = TRUE, escape = FALSE) |>
   kable_styling(full_width = FALSE) |>
+  # Column size
   column_spec(1, width = "2cm") |>
   column_spec(2, width = "4.5cm") |>
   column_spec(3, width = "2cm") |>
@@ -86,16 +87,22 @@ attr_table_sr |>
 
 ### Antigenic map - colored by type - with legend
 ```{r, echo = FALSE}
-file_path_type_legend <- file.path(latest_folder_path, paste0("ac_map_", virus_in_use, "_", today_date, ".jpg"))
-
-# Include the image in your R Markdown document
+file_path_type_legend <- file.path(latest_folder_path, 
+                                   paste0("ac_map_", 
+                                          virus_in_use, "_", 
+                                          today_date, ".jpg"))
+# Include image
 knitr::include_graphics(file_path_type_legend)
 ```
 
 ### Antigenic map - colored by type - with labels
 ```{r, echo = FALSE}
 # Include graphic for antigenic map colored by type - with labels
-file_path_type_labels <- file.path(latest_folder_path, paste0("ac_map_", virus_in_use, "_", today_date, "_label.jpg"))
+file_path_type_labels <- file.path(latest_folder_path, 
+                                   paste0("ac_map_", 
+                                          virus_in_use, "_", 
+                                          today_date, "_label.jpg"))
+# Include image
 knitr::include_graphics(file_path_type_labels)
 ```
 
@@ -103,20 +110,32 @@ knitr::include_graphics(file_path_type_labels)
 
 ```{r, echo = FALSE}
 # Include graphic for antigenic map colored by antigenic group - with legend
-file_path_group_legend <- file.path(latest_folder_path, paste0("ac_map_", virus_in_use, "_", today_date, "_grouped.jpg"))
+file_path_group_legend <- file.path(latest_folder_path, 
+                                    paste0("ac_map_", 
+                                           virus_in_use, "_", 
+                                           today_date, "_grouped.jpg"))
+# Include image
 knitr::include_graphics(file_path_group_legend)
 ```
 
 ### Antigenic map - colored by antigenic group - with labels
 ```{r, echo = FALSE}
 # Include graphic for antigenic map colored by antigenic group - with labels
-file_path_group_labels <- file.path(latest_folder_path, paste0("ac_map_", virus_in_use, "_",today_date, "_grouped_label.jpg"))
+file_path_group_labels <- file.path(latest_folder_path, 
+                                    paste0("ac_map_", 
+                                           virus_in_use, "_",
+                                           today_date, "_grouped_label.jpg"))
+# Include image
 knitr::include_graphics(file_path_group_labels)
 ```
 
 ### Antigenic map blank
 ```{r, echo = FALSE}
 # Include graphic for blank antigenic map
-file_path_blank <- file.path(latest_folder_path, paste0("ac_map_", virus_in_use, "_", today_date, "_plain.jpg"))
+file_path_blank <- file.path(latest_folder_path, 
+                             paste0("ac_map_", 
+                                    virus_in_use, "_", 
+                                    today_date, "_plain.jpg"))
+# Include image
 knitr::include_graphics(file_path_blank)
 ```
