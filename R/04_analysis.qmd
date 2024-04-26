@@ -59,8 +59,8 @@ ag_df <- as.data.frame(ag_coords) |>
 ### Clustering (Futute Perspectives)
 clustering_result <- dbscan::dbscan(
   ag_df[, c("V1", "V2")],
-  eps = 0.7, # the maximum distance between two samples for one to be considered in the neighborhood
-  minPts = 2) # number of samples in a neighborhood for a point to be considered a core point
+  eps = 0.7, # Max distance between two samples for one to be considered part of cluster
+  minPts = 2) # Number of samples in a neighborhood for a point to be considered a core point
 
 ag_df <- ag_df |> 
   mutate(cluster = clustering_result$cluster)
@@ -91,28 +91,36 @@ unique_AG <- dd |>
 colors_for_AG <- setNames(
   viridis::viridis(
     length(unique_AG), 
-    option = "turbo"), 
+    option = "turbo"), # color-blind friendly palette
   unique_AG)
 
 colors_for_AG <- sapply(
   colors_for_AG, 
   adjustcolor, 
-  alpha.f = 0.8)
+  alpha.f = 0.8) # Add slight transparency
 
 dd <- dd |> mutate(color = colors_for_AG[antigen])
 
+# Define antigenic groups
 unique_antigenic_groups <- unique(dd$antigenic_group)
-# Find antigenic groups not already in colors_for_AG
-new_groups <- unique_antigenic_groups[!unique_antigenic_groups %in% names(colors_for_AG)]
 
-# If there are new groups, generate colors for them
+new_groups <- unique_antigenic_groups[
+  !unique_antigenic_groups 
+  %in% 
+    names(colors_for_AG)]
+
+# Color antigenic groups
 if(length(new_groups) > 0) {
-  new_colors <- viridis::viridis(length(new_groups),option = "turbo")
-  # Add these new colors to the existing colors_for_AG
-  colors_for_AG <- c(colors_for_AG, setNames(new_colors, new_groups))
+  new_colors <- viridis::viridis(
+    length(new_groups),
+    option = "turbo")
+  
+  colors_for_AG <- c(colors_for_AG, 
+                     setNames(new_colors, 
+                              new_groups))
 }
 
-
+# Color serum accordingly to homolog ag
 unique_serum_exposures <- unique(attr_table_sr$"Serum exposure antigen")
 # ag_df and antigenic_group to color
 homolog_colors <- dd |> 
@@ -121,15 +129,17 @@ homolog_colors <- dd |>
          color) |>
   distinct() |>
   # Ensure there's a row for each antigenic group mentioned in attr_table_sr
-  filter(serum_exposure_homolog %in% unique_serum_exposures)
+  filter(serum_exposure_homolog 
+         %in% 
+           unique_serum_exposures)
 
 colors_for_SR <- setNames(homolog_colors$color, 
                           homolog_colors$serum_exposure_homolog)
 
-
-library("dbscan")
-library("ggforce")
-library("RColorBrewer")
+#### Future Perspective ###
+library("dbscan")       # (Futute Perspectives)
+library("ggforce")      # (Futute Perspectives)
+library("RColorBrewer") # (Futute Perspectives)
 ### Clustering (Futute Perspectives)
 num_clusters <- max(ag_df$cluster[ag_df$cluster > 0])
 if(num_clusters <= 8) {
@@ -290,20 +300,25 @@ ag_counts <- dd |>
   filter(type == "AG") |>
   count(antigenic_group)
 
-# Filter for antigenic_groups appearing more than once
+########################
+# Grouped with Labels #
+#######################
+# Define antigenic groups
 ag_groups_with_multiple_entries <- ag_counts |>
   filter(n > 1) |>
   pull(antigenic_group)
-
-# Create a subset of dd for these groups
+# Add to dd
 dd_multiple_entries <- dd |>
-  filter(antigenic_group %in% ag_groups_with_multiple_entries)
+  filter(antigenic_group 
+         %in% 
+           ag_groups_with_multiple_entries)
 
-### Clustering (Futute Perspectives)
+### ___________________________________________
+### Clustering         (Futute Perspectives)
 dd_cluster <- dd |> 
   filter(type == "AG") |> 
   filter(cluster != 0) 
-
+### ___________________________________________
 
 ag_map_5 <- base_map +
   geom_point(data = filter(dd, 
