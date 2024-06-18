@@ -168,7 +168,7 @@ base_map <- ggplot(dd) +
   geom_point(data = filter(dd, type == "SR", !is.na(serum_group)), 
              aes(x = V1, y = V2, shape = type, color = serum_group), 
              size = 2, shape = 0, stroke = 0.4, alpha = 0.7) +  
-  geom_point(data = filter(dd, is.na(serum_group)),  
+  geom_point(data = filter(dd, is.na(serum_group), type == "SR"),  
              aes(x = V1, y = V2, color = "Other"),  
              shape = 0, size = 2, alpha = 0.7) +
   scale_y_reverse(breaks = seq(floor(range(dd$V2))[1], 
@@ -362,6 +362,8 @@ Saving the relevant plots
 ############################
 # Save the map (.svg.tiff) #
 ############################
+make_dir("../results")
+
 base_filename <- paste0("ac_map_", 
                         table_info |>
                           pull(virus_type), 
