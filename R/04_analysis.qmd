@@ -519,4 +519,8 @@ ggsave(
   height = 12,
   units = "cm",
 )
+
+write_tsv(dd,
+            file = "../data/dd.tsv")
+
 ```
